@@ -79,7 +79,7 @@ function renderDateSelector() {
   container.innerHTML = `
     <div class="form-group">
       <label>Stay Dates</label>
-      <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onclick="window.initDateRangePicker(); if(window.dateRangePicker){window.dateRangePicker.show();}else{alert('Loading calendar...');}">
+      <input type="text" id="stayRangeInput" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onclick="window.initDateRangePicker(); if(window.dateRangePicker){window.dateRangePicker.show();}else{alert('Loading calendar...');}">
       <input type="hidden" id="checkIn" value="${getTodayStr()}">
       <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
@@ -127,7 +127,7 @@ function initDateRangePicker() {
     return;
   }
   
-  const pickerEl = document.getElementById('dateRangePicker');
+  const pickerEl = document.getElementById('stayRangeInput');
   const checkInEl = document.getElementById('checkIn');
   const checkOutEl = document.getElementById('checkOut');
 
@@ -186,7 +186,7 @@ window.initDateRangePicker = initDateRangePicker;
  * Update date range display text
  */
 function updateDateRangeText(checkIn, checkOut) {
-  const pickerEl = document.getElementById('dateRangePicker');
+  const pickerEl = document.getElementById('stayRangeInput');
   const displayEl = document.getElementById('dateRangeDisplay');
 
   if (!checkIn || !checkOut) return;
