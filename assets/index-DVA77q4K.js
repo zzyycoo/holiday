@@ -320,7 +320,7 @@ Please help to arrange bus seats as below:
 
 Name: ${t}
 ${o}
-Authorizer: ${n}`}var ue={room:{enabled:!0,icon:`🏨`,title:`Room Booking`},car:{enabled:!0,icon:`🚗`,title:`Car Service`},golf:{enabled:!0,icon:`⛳`,title:`Golf Booking`},bus:{enabled:!0,icon:`🚌`,title:`Bus Service`}};function de(){return ue}var G=`3.2.11`;function fe(){t(),pe(),me(),ye(),window.pidDatabase=new Map,window.oldPIDIndex=new Map,window.newPIDIndex=new Map,window.pidDatabaseLoaded=!1,console.log(`Booking App v${G} initialized`)}function pe(){let e=document.querySelector(`.app-header`);e&&(e.innerHTML=`
+Authorizer: ${n}`}var ue={room:{enabled:!0,icon:`🏨`,title:`Room Booking`},car:{enabled:!0,icon:`🚗`,title:`Car Service`},golf:{enabled:!0,icon:`⛳`,title:`Golf Booking`},bus:{enabled:!0,icon:`🚌`,title:`Bus Service`}};function de(){return ue}var G=`3.2.12`;function fe(){t(),pe(),me(),ye(),window.pidDatabase=new Map,window.oldPIDIndex=new Map,window.newPIDIndex=new Map,window.pidDatabaseLoaded=!1,console.log(`Booking App v${G} initialized`)}function pe(){let e=document.querySelector(`.app-header`);e&&(e.innerHTML=`
       <h1>🦾 A KANG TOOLS</h1>
       <div class="version">v${G} | ${Se()}</div>
     `)}function me(){let e=document.getElementById(`service-selector`);if(!e){console.error(`Service selector container not found`);return}try{let t=de();if(console.log(`Services loaded:`,t),!t||typeof t!=`object`){console.error(`Invalid services data:`,t),e.innerHTML=`<p style="color:red">Error loading services</p>`;return}let n=Object.entries(t).filter(([e,t])=>t&&t.enabled);if(console.log(`Filtered services:`,n),n.length===0){e.innerHTML=`<p>No services available</p>`;return}e.innerHTML=n.map(([e,t])=>`
