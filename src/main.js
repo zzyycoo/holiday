@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.2.0';
+const VERSION = '3.2.3';
 
 /**
  * Initialize application
@@ -138,7 +138,6 @@ function renderServiceSelector() {
 
     container.innerHTML = serviceList.map(([key, config]) => `
       <div class="service-card" data-service="${key}" onclick="window.app.selectService('${key}')">
-        <span class="icon">${config.icon || '🔹'}</span>
         <span class="title">${config.title || key}</span>
       </div>
     `).join('');

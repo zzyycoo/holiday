@@ -31,7 +31,7 @@
 .service-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   margin-bottom: var(--space-lg);
 }
 
@@ -39,13 +39,12 @@
   background: var(--card-bg);
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) var(--space-xs);
   text-align: center;
   cursor: pointer;
   transition: all var(--transition-base);
-  min-height: 70px;
+  min-height: 50px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -60,12 +59,6 @@
   border-color: var(--primary);
   background: var(--primary);
   color: white;
-}
-
-.service-card .icon {
-  font-size: 1.5rem;
-  margin-bottom: var(--space-xs);
-  display: block;
 }
 
 .service-card .title {
