@@ -269,13 +269,9 @@ Drop off point: ${dropoff}`);
   return `Subject: ${subject}
 
 Dear @Concierge Services
-
 Please kindly arrange a VIP car as the followings:
 
 ${carDetails.join('\n\n')}
-
 Payment: ${payment}
-Authorizer: ${authorizer}
-
-Thank you`;
+Authorizer: ${authorizer}`;
 }

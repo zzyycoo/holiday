@@ -633,11 +633,9 @@ export function generateRoomEmail() {
   return `Subject: ${subject}
 
 Dear @Concierge Services @Front Desk
-
 Please kindly arrange room booking as follows:
 
 Guest name: ${guestLines.join('\n')}
-
 Room type: ${hotel}
 ${roomLines.join('\n')}
 
@@ -646,9 +644,7 @@ Check out: ${checkOutFormatted}
 Rate code: CASBAR
 Promotion: ${promotionDisplay}
 Deposit: No
-Trip authorizer: ${authorizer}
-
-Thank you`;
+Trip authorizer: ${authorizer}`;
 }
 
 /**

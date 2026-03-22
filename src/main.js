@@ -429,10 +429,46 @@ function sendEmail() {
   
   const body = encodeURIComponent(bodyText);
   
-  // Build recipients
-  let recipients = 'concierge@thegrandhotram.com,Front.Desk@thegrandhotram.com';
+  // Build recipients and CC (from original booking system)
+  let recipients, ccRecipients;
   
-  window.location.href = `mailto:${recipients}?subject=${encodeURIComponent(subject)}&body=${body}`;
+  // Check if A171 One Day Trip mode
+  const isA171OneDayTrip = state.isA171Mode && document.getElementById('a171-subject-type')?.value === 'onedaytrip';
+  
+  if (isA171OneDayTrip) {
+    recipients = [
+      'casinoaudit@thegrandhotram.com',
+      'concierge@thegrandhotram.com',
+      'Front.Desk@thegrandhotram.com',
+      'grandservice@thegrandhotram.com',
+      'HIR.receptionist@thegrandhotram.com',
+      'IC.receptionist@thegrandhotram.com',
+      'Guestrelations.Management@thegrandhotram.com',
+      'rooms.coordinator@thegrandhotram.com'
+    ].join(',');
+    ccRecipients = [
+      'rewards@thegrandhotram.com',
+      'im.gcsea@thegrandhotram.com',
+      'HTR@thegrandhotram.com'
+    ].join(',');
+  } else {
+    recipients = [
+      'concierge@thegrandhotram.com',
+      'Front.Desk@thegrandhotram.com',
+      'grandservice@thegrandhotram.com',
+      'HIR.receptionist@thegrandhotram.com',
+      'IC.receptionist@thegrandhotram.com',
+      'Guestrelations.Management@thegrandhotram.com',
+      'rooms.coordinator@thegrandhotram.com'
+    ].join(',');
+    ccRecipients = [
+      'rewards@thegrandhotram.com',
+      'im.gcsea@thegrandhotram.com',
+      'HTR@thegrandhotram.com'
+    ].join(',');
+  }
+  
+  window.location.href = `mailto:${recipients}?cc=${encodeURIComponent(ccRecipients)}&subject=${encodeURIComponent(subject)}&body=${body}`;
   
   showToast('Opening email client...', 'info');
 }
@@ -785,11 +821,11 @@ function generateA171Email() {
     body = patrons.map(p => `Please note that the guest one day trip: ${p.name} - ${p.pid}`).join('\n');
   } else {
     subject = `[${agent}] ${firstPatron.pid} ${firstPatron.name} Patron Registration ${dateStr}`;
-    body = `Please kindly help to arrange patron registration as follows:\n\n` + 
+    body = `Please kindly help to arrange patron registration as follows:\n` + 
            patrons.map(p => `- ${p.name} - ${p.pid}`).join('\n');
   }
   
-  return `Subject: ${subject}\n\n${body}\n\nAuthorizer: ${authorizer}\n\nThank you`;
+  return `Subject: ${subject}\n\n${body}\nAuthorizer: ${authorizer}`;
 }
 
 // Export to window for inline onclick handlers and global access

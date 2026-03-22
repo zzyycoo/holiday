@@ -158,15 +158,11 @@ Seats: ${r.seats}`).join('\n');
   return `Subject: ${subject}
 
 Hi @Grand Service
-
 Please help to arrange bus seats as below:
 
 Name: ${passenger}
 ${routesText}
-
-Authorizer: ${authorizer}
-
-Thank you`;
+Authorizer: ${authorizer}`;
 }
 
 /**
