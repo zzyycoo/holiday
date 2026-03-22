@@ -243,7 +243,7 @@ Pick up point: ${l}
 
 Drop off point: ${u}`)}),t.length===0)throw Error(`Please add at least one car booking`);let n=document.getElementById(`carPayment-1`)?.value||`Free Comp (If guest enough 2000 points)`,r=document.getElementById(`carAuthorizer-1`)?.value||`xujian`,i=!e.selectedServices.has(`room`),a=`VIP Car Service Request`;if(i){let e=document.getElementById(`carAgent`)?.value?.trim()||``,t=h(document.getElementById(`carOldPID-1`)?.value?.trim()||``,document.getElementById(`carNewPID-1`)?.value?.trim()||``),n=document.getElementById(`carName-1`)?.value?.trim()||``,r=f(document.getElementById(`carDate-1`)?.value);e&&n&&(a=`[${e}] ${t} ${n} Car Service ${r}`)}return`Subject: ${a}
 
-Dear team
+Dear @Concierge Services
 Please kindly arrange a VIP car as the followings:
 
 ${t.join(`
@@ -298,7 +298,7 @@ Authorizer: ${r}`}var F=1;function I(){let t=document.getElementById(`golf-secti
     </div>
   `,t.appendChild(r),z(),n}function R(t){let n=document.getElementById(`golfGuest-${t}`);n&&(n.remove(),e.golfGuests=e.golfGuests.filter(e=>e!==t),z())}function z(){let t=document.getElementById(`golf-pax`);if(!t)return;let n=e.golfGuests.filter(e=>document.getElementById(`golfGuestName-${e}`)?.value?.trim()).length;n>0&&(t.value=n)}function B(){let t=document.getElementById(`golf-guests-container`);t&&(t.innerHTML=``,e.golfGuests=[],e.guests.forEach((t,n)=>{if(!document.getElementById(`guest-${n}`))return;let r=document.getElementById(`guestName-${n}`)?.value,i=document.getElementById(`guestOldPID-${n}`)?.value||``,a=document.getElementById(`guestNewPID-${n}`)?.value||`New`;if(r){L();let t=e.golfGuests[e.golfGuests.length-1];document.getElementById(`golfGuestName-${t}`).value=r,document.getElementById(`golfGuestOldPID-${t}`).value=i,document.getElementById(`golfGuestNewPID-${t}`).value=a}t.sharers.forEach(t=>{let r=document.getElementById(`sharerName-${n}-${t}`)?.value;if(r){let i=document.getElementById(`sharerOldPID-${n}-${t}`)?.value||``,a=document.getElementById(`sharerNewPID-${n}-${t}`)?.value||`New`;L();let o=e.golfGuests[e.golfGuests.length-1];document.getElementById(`golfGuestName-${o}`).value=r,document.getElementById(`golfGuestOldPID-${o}`).value=i,document.getElementById(`golfGuestNewPID-${o}`).value=a}})}),z(),window.app&&window.app.showToast&&window.app.showToast(`✓ Room guests synced successfully!`,`success`))}function V(){let t=document.getElementById(`golf-datetime`)?.value,n=document.getElementById(`golf-pax`)?.value,r=document.getElementById(`golf-payment`)?.value,i=document.getElementById(`golf-authorizer`)?.value||`Jian.Xu`,a=document.getElementById(`golf-note`)?.value||`Casino Rate (If guests show CSN membership)`;if(!t)throw Error(`Please select date and time for golf booking`);let o=[];if(e.golfGuests.forEach(e=>{let t=document.getElementById(`golfGuestName-${e}`)?.value?.trim(),n=document.getElementById(`golfGuestOldPID-${e}`)?.value?.trim()||``,r=document.getElementById(`golfGuestNewPID-${e}`)?.value?.trim()||``;t&&o.push(`${t} - ${h(n,r)}`)}),o.length===0)throw Error(`Please add at least one golf guest`);let s=new Date(t).toLocaleTimeString(`en-US`,{hour:`2-digit`,minute:`2-digit`,hour12:!0}),c=f(t.split(`T`)[0]),l=!e.selectedServices.has(`room`),u=`Golf Booking Request`;if(l){let t=document.getElementById(`golfAgent`)?.value?.trim()||``,n=e.golfGuests[0],r=h(document.getElementById(`golfGuestOldPID-${n}`)?.value?.trim()||``,document.getElementById(`golfGuestNewPID-${n}`)?.value?.trim()||``),i=document.getElementById(`golfGuestName-${n}`)?.value?.trim()||``;t&&i&&(u=`[${t}] ${r} ${i} Golf Booking ${c}`)}return`Subject: ${u}
 
-Dear team
+Dear @The Bluffs Ho Tram - Bookings
 Guest's name:
 ${o.join(`
 `)}
@@ -330,7 +330,7 @@ Route: ${e.route} ${e.time} ${e.date}
 Seats: ${e.seats}`).join(`
 `);return`Subject: ${a}
 
-Dear team
+Hi @Grand Service
 Please help to arrange bus seats as below:
 
 Name: ${t}
@@ -364,12 +364,7 @@ Authorizer: ${n}`}var ue={room:{enabled:!0,icon:`🏨`,title:`Room Booking`},car
         <input type="text" id="a171-patron-newpid-${e}" placeholder="New PID" class="form-input short">
       </div>
     </div>
-  `,t.appendChild(n)}function we(e){Q.delete(e);let t=document.getElementById(`a171-patron-${e}`);t&&t.remove()}function Te(){let e=document.getElementById(`a171-agent`)?.value?.trim()||`A171`,t=document.getElementById(`a171-subject-type`)?.value||`patron`,n=document.getElementById(`a171-date`)?.value,r=document.getElementById(`a171-authorizer`)?.value?.trim()||`Jian.Xu`;if(!n)throw Error(`Please select date`);let i=[];if(Q.forEach((e,t)=>{let n=document.getElementById(`a171-patron-name-${t}`)?.value?.trim();if(n){let e=document.getElementById(`a171-patron-oldpid-${t}`)?.value?.trim()||``,r=document.getElementById(`a171-patron-newpid-${t}`)?.value?.trim()||``,a=h(e,r);i.push({name:n,pid:a,oldPID:e,newPID:r})}}),i.length===0)throw Error(`Please add at least one patron`);let a=i[0],o=f(n),s,c;return t===`onedaytrip`?(s=`[${e}] ${a.pid} ${a.name} One Day Trip ${o}`,c=`Dear team
-
-Please note that the guest one day trip:
-`+i.map(e=>`${e.name} - ${e.pid}`).join(`
-`)):(s=`[${e}] ${a.pid} ${a.name} Patron Registration ${o}`,c=`Dear team
-
-Please kindly help to arrange patron registration as follows:
+  `,t.appendChild(n)}function we(e){Q.delete(e);let t=document.getElementById(`a171-patron-${e}`);t&&t.remove()}function Te(){let e=document.getElementById(`a171-agent`)?.value?.trim()||`A171`,t=document.getElementById(`a171-subject-type`)?.value||`patron`,n=document.getElementById(`a171-date`)?.value,r=document.getElementById(`a171-authorizer`)?.value?.trim()||`Jian.Xu`;if(!n)throw Error(`Please select date`);let i=[];if(Q.forEach((e,t)=>{let n=document.getElementById(`a171-patron-name-${t}`)?.value?.trim();if(n){let e=document.getElementById(`a171-patron-oldpid-${t}`)?.value?.trim()||``,r=document.getElementById(`a171-patron-newpid-${t}`)?.value?.trim()||``,a=h(e,r);i.push({name:n,pid:a,oldPID:e,newPID:r})}}),i.length===0)throw Error(`Please add at least one patron`);let a=i[0],o=f(n),s,c;return t===`onedaytrip`?(s=`[${e}] ${a.pid} ${a.name} One Day Trip ${o}`,c=i.map(e=>`Please note that the guest one day trip: ${e.name} - ${e.pid}`).join(`
+`)):(s=`[${e}] ${a.pid} ${a.name} Patron Registration ${o}`,c=`Please kindly help to arrange patron registration as follows:
 `+i.map(e=>`- ${e.name} - ${e.pid}`).join(`
 `)),`Subject: ${s}\n\n${c}\nAuthorizer: ${r}`}window.app={selectService:he,setAgent:te,selectHotel:w,addGuestForm:T,removeGuestForm:ne,addSharerForm:re,removeSharerForm:ie,setRoomType:D,setRoomTypeFromSelect:oe,searchPID:se,addCarForm:j,removeCarForm:M,setLocation:N,addGolfGuestForm:L,removeGolfGuestForm:R,updateGolfPax:z,syncGolfGuests:B,toggleBusRoute:U,addA171Patron:$,removeA171Patron:we,generateAllEmails:K,copyToClipboard:q,sendEmail:J,showToast:Y,handlePIDImport:xe,saveToGoogleSheets:be,formatDate:d,formatDateShort:f,getTodayStr:p,getTomorrowStr:m,resolvePID:h},document.addEventListener(`DOMContentLoaded`,fe);
