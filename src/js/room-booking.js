@@ -86,7 +86,7 @@ function renderDateSelector() {
     </div>
   `;
 
-  setTimeout(() => initDateRangePicker(), 0);
+  setTimeout(() => initDateRangePicker(), 100);
 }
 
 /**
@@ -121,13 +121,17 @@ function initDateRangePicker() {
   const checkInEl = document.getElementById('checkIn');
   const checkOutEl = document.getElementById('checkOut');
 
-  if (!pickerEl || !checkInEl || !checkOutEl) return;
+  if (!pickerEl || !checkInEl || !checkOutEl) {
+    console.error('Date picker elements not found');
+    return;
+  }
 
   // Set initial display
   updateDateRangeText(checkInEl.value, checkOutEl.value);
 
-  // Wait for Litepicker to be available
-  if (typeof Litepicker === 'undefined') {
+  // Check if Litepicker is loaded
+  if (typeof window.Litepicker === 'undefined') {
+    console.log('Litepicker not loaded yet, retrying...');
     setTimeout(() => initDateRangePicker(), 500);
     return;
   }
@@ -137,23 +141,36 @@ function initDateRangePicker() {
     dateRangePicker.destroy();
   }
 
-  dateRangePicker = new Litepicker({
-    element: pickerEl,
-    singleMode: false,
-    startDate: checkInEl.value,
-    endDate: checkOutEl.value,
-    format: 'DD MMM YYYY',
-    delimiter: ' → ',
-    tooltipText: { one: 'night', other: 'nights' },
-    tooltipNumber: (totalDays) => totalDays - 1,
-    setup: (picker) => {
-      picker.on('selected', (startDate, endDate) => {
-        checkInEl.value = startDate.format('YYYY-MM-DD');
-        checkOutEl.value = endDate.format('YYYY-MM-DD');
-        updateDateRangeText(checkInEl.value, checkOutEl.value);
-      });
-    }
-  });
+  try {
+    dateRangePicker = new window.Litepicker({
+      element: pickerEl,
+      singleMode: false,
+      startDate: checkInEl.value,
+      endDate: checkOutEl.value,
+      format: 'DD MMM YYYY',
+      delimiter: ' → ',
+      tooltipText: { one: 'night', other: 'nights' },
+      tooltipNumber: (totalDays) => totalDays - 1,
+      setup: (picker) => {
+        picker.on('selected', (startDate, endDate) => {
+          checkInEl.value = startDate.format('YYYY-MM-DD');
+          checkOutEl.value = endDate.format('YYYY-MM-DD');
+          updateDateRangeText(checkInEl.value, checkOutEl.value);
+        });
+      }
+    });
+    
+    // Ensure picker shows on click
+    pickerEl.addEventListener('click', () => {
+      if (dateRangePicker && !dateRangePicker.isShown) {
+        dateRangePicker.show();
+      }
+    });
+    
+    console.log('Litepicker initialized successfully');
+  } catch (err) {
+    console.error('Litepicker init error:', err);
+  }
 }
 
 /**
