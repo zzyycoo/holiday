@@ -671,9 +671,6 @@ Dear @Concierge Services @Front Desk
 
 Please kindly arrange room booking as follows:
 
-Agent: ${agent}
-Hotel: ${hotel}
-
 Guest name: ${guestLines.join('\n')}
 
 Room type: ${hotel}

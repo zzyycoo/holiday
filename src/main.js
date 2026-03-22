@@ -405,7 +405,7 @@ async function copyToClipboard() {
 }
 
 /**
- * Send email (mailto)
+ * Send email (mailto) - Fixed to properly extract subject and body
  */
 function sendEmail() {
   if (!window.generatedEmail) {
@@ -413,9 +413,21 @@ function sendEmail() {
     return;
   }
   
-  const subjectMatch = window.generatedEmail.match(/Subject:\s*(.+?)\n/);
-  const subject = subjectMatch ? subjectMatch[1].trim() : 'Booking Request';
-  const body = encodeURIComponent(window.generatedEmail.replace(/^Subject:\s*.+?\n+/m, '').trim());
+  // Extract subject - handle both "Subject: XXX" and standalone subject
+  let subject = 'Booking Request';
+  let bodyText = window.generatedEmail;
+  
+  const subjectMatch = window.generatedEmail.match(/^Subject:\s*(.+)$/m);
+  if (subjectMatch) {
+    subject = subjectMatch[1].trim();
+    // Remove Subject line from body
+    bodyText = window.generatedEmail.replace(/^Subject:.+\n+/m, '').trim();
+  }
+  
+  // Also remove any remaining "Subject:" prefix if present
+  bodyText = bodyText.replace(/^Subject:\s*/i, '').trim();
+  
+  const body = encodeURIComponent(bodyText);
   
   // Build recipients
   let recipients = 'concierge@thegrandhotram.com,Front.Desk@thegrandhotram.com';
@@ -423,6 +435,101 @@ function sendEmail() {
   window.location.href = `mailto:${recipients}?subject=${encodeURIComponent(subject)}&body=${body}`;
   
   showToast('Opening email client...', 'info');
+}
+
+/**
+ * Save booking data to Google Sheets
+ * Uses Google Apps Script Web App URL
+ */
+function saveToGoogleSheets() {
+  if (!window.generatedEmail) {
+    showToast('Please generate email first', 'warning');
+    return;
+  }
+  
+  // Extract data from the current booking
+  const data = extractBookingData();
+  if (!data) {
+    showToast('No valid booking data to save', 'error');
+    return;
+  }
+  
+  // Google Apps Script Web App URL
+  // User needs to deploy their own Google Apps Script and put the URL here
+  const GAS_URL = localStorage.getItem('gasUrl') || '';
+  
+  if (!GAS_URL) {
+    // Show setup dialog
+    const url = prompt('Please enter your Google Apps Script Web App URL:\n\n(Leave empty to skip)', '');
+    if (url) {
+      localStorage.setItem('gasUrl', url);
+      saveToGoogleSheets(); // Retry with new URL
+      return;
+    } else {
+      showToast('Google Sheets URL not configured', 'warning');
+      return;
+    }
+  }
+  
+  showToast('Saving to Google Sheets...', 'info');
+  
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    showToast('✓ Saved to Google Sheets!', 'success');
+  })
+  .catch(error => {
+    console.error('Error saving to Google Sheets:', error);
+    showToast('❌ Failed to save. Check console.', 'error');
+  });
+}
+
+/**
+ * Extract booking data for Google Sheets
+ */
+function extractBookingData() {
+  const data = {
+    timestamp: new Date().toISOString(),
+    agent: document.getElementById('agentName')?.value?.trim() || '',
+    hotel: state.currentHotel || '',
+    serviceType: Array.from(state.selectedServices).join(', '),
+    checkIn: document.getElementById('checkIn')?.value || '',
+    checkOut: document.getElementById('checkOut')?.value || '',
+    authorizer: document.getElementById('authorizer')?.value?.trim() || 'Jian.Xu',
+    guests: [],
+    emailContent: window.generatedEmail || ''
+  };
+  
+  // Extract guest data
+  if (state.selectedServices.has('room')) {
+    state.guests.forEach((guest, id) => {
+      const guestDiv = document.getElementById(`guest-${id}`);
+      if (!guestDiv) return;
+      
+      const name = document.getElementById(`guestName-${id}`)?.value?.trim();
+      const oldPID = document.getElementById(`guestOldPID-${id}`)?.value?.trim() || '';
+      const newPID = document.getElementById(`guestNewPID-${id}`)?.value?.trim() || '';
+      const roomType = document.getElementById(`roomType-${id}`)?.value;
+      
+      if (name) {
+        data.guests.push({
+          name,
+          oldPID,
+          newPID,
+          roomType: roomType || '',
+          sharers: []
+        });
+      }
+    });
+  }
+  
+  return data;
 }
 
 /**
@@ -652,6 +759,7 @@ window.app = {
   sendEmail,
   showToast,
   handlePIDImport,
+  saveToGoogleSheets,
   
   // Utilities
   formatDate,
