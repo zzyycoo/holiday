@@ -127,7 +127,7 @@ function initDateRangePicker() {
   updateDateRangeText(checkInEl.value, checkOutEl.value);
 
   // Wait for Litepicker to be available
-  if (typeof window.Litepicker === 'undefined') {
+  if (typeof Litepicker === 'undefined') {
     setTimeout(() => initDateRangePicker(), 500);
     return;
   }
@@ -137,7 +137,7 @@ function initDateRangePicker() {
     dateRangePicker.destroy();
   }
 
-  dateRangePicker = new window.Litepicker({
+  dateRangePicker = new Litepicker({
     element: pickerEl,
     singleMode: false,
     startDate: checkInEl.value,
