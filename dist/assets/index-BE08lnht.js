@@ -21,14 +21,10 @@
       ${e}
     </button>
   `).join(``)}function b(){let e=document.getElementById(`date-selector`);e&&(e.innerHTML=`
-    <div class="form-row">
-      <div class="form-group" style="flex: 1;">
-        <label>Stay Dates</label>
-        <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer;">
-        <input type="hidden" id="checkIn" value="${p()}">
-        <input type="hidden" id="checkOut" value="${m()}">
-        <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
-      </div>
+    <div class="form-group">
+      <input type="text" id="dateRangePicker" placeholder="Check-in → Check-out" readonly class="form-input" style="cursor: pointer; text-align: center;">
+      <input type="hidden" id="checkIn" value="${p()}">
+      <input type="hidden" id="checkOut" value="${m()}">
     </div>
   `,setTimeout(()=>S(),0))}function x(){let e=document.getElementById(`authorizer-selector`);e&&(e.innerHTML=`
     <div class="form-group">
@@ -42,16 +38,7 @@
         <option value="Jian.Xu">
       </datalist>
     </div>
-  `)}function S(){let e=document.getElementById(`dateRangePicker`),t=document.getElementById(`checkIn`),n=document.getElementById(`checkOut`);if(!(!e||!t||!n)){if(C(t.value,n.value),window.Litepicker===void 0){setTimeout(()=>S(),500);return}try{_&&_.destroy(),_=new window.Litepicker({element:e,singleMode:!1,startDate:t.value,endDate:n.value,format:`DD MMM YYYY`,delimiter:` → `,tooltipText:{one:`night`,other:`nights`},tooltipNumber:e=>e-1,setup:e=>{e.on(`selected`,(e,r)=>{t.value=e.format(`YYYY-MM-DD`),n.value=r.format(`YYYY-MM-DD`),C(t.value,n.value)})}})}catch(r){console.error(`Litepicker error:`,r),e.style.display=`none`;let i=document.createElement(`div`);i.className=`form-row`,i.innerHTML=`
-      <div class="form-group">
-        <label>Check In</label>
-        <input type="date" id="checkInNative" value="${p()}" class="form-input">
-      </div>
-      <div class="form-group">
-        <label>Check Out</label>
-        <input type="date" id="checkOutNative" value="${m()}" class="form-input">
-      </div>
-    `,e.parentNode.appendChild(i),document.getElementById(`checkInNative`)?.addEventListener(`change`,e=>{t.value=e.target.value}),document.getElementById(`checkOutNative`)?.addEventListener(`change`,e=>{n.value=e.target.value})}}}function C(e,t){let n=document.getElementById(`dateRangePicker`),r=document.getElementById(`dateRangeDisplay`);if(!e||!t)return;let i=new Date(e+`T00:00:00`),a=new Date(t+`T00:00:00`),o=Math.round((a-i)/(1e3*60*60*24)),s=e=>{let t=new Date(e);return`${t.getDate()} ${[`Jan`,`Feb`,`Mar`,`Apr`,`May`,`Jun`,`Jul`,`Aug`,`Sep`,`Oct`,`Nov`,`Dec`][t.getMonth()]}`};n&&(n.value=`${s(i)} → ${s(a)}`),r&&o>0?r.textContent=`${o} night${o>1?`s`:``}`:r&&(r.textContent=``)}function te(e,t){let n=document.getElementById(`agentName`);n&&(n.value=t),document.querySelectorAll(`.agent-btn`).forEach(t=>{t.classList.toggle(`active`,t.dataset.agent===e)})}function w(t){e.currentHotel=t,document.querySelectorAll(`.hotel-btn`).forEach(e=>{e.classList.toggle(`active`,e.dataset.hotel===t)}),ae(t)}function T(){let t=document.getElementById(`guests-container`);if(!t)return;let n=g++;e.guests.set(n,{id:n,sharers:[]});let r=document.createElement(`div`);return r.className=`guest-card`,r.id=`guest-${n}`,r.innerHTML=`
+  `)}function S(){let e=document.getElementById(`dateRangePicker`),t=document.getElementById(`checkIn`),n=document.getElementById(`checkOut`);if(!(!e||!t||!n)){if(C(t.value,n.value),window.Litepicker===void 0){setTimeout(()=>S(),500);return}try{_&&_.destroy(),_=new window.Litepicker({element:e,singleMode:!1,startDate:t.value,endDate:n.value,format:`DD MMM`,delimiter:` → `,numberOfMonths:2,numberOfColumns:2,tooltipText:{one:`night`,other:`nights`},tooltipNumber:e=>e-1,setup:e=>{e.on(`selected`,(e,r)=>{t.value=e.format(`YYYY-MM-DD`),n.value=r.format(`YYYY-MM-DD`),C(t.value,n.value)})}})}catch(t){console.error(`Litepicker error:`,t),e.placeholder=`Select dates`}}}function C(e,t){let n=document.getElementById(`dateRangePicker`);if(!n||!e||!t)return;let r=new Date(e+`T00:00:00`),i=new Date(t+`T00:00:00`),a=e=>{let t=new Date(e);return`${t.getDate()} ${[`Jan`,`Feb`,`Mar`,`Apr`,`May`,`Jun`,`Jul`,`Aug`,`Sep`,`Oct`,`Nov`,`Dec`][t.getMonth()]}`};n.value=`${a(r)} → ${a(i)}`}function te(e,t){let n=document.getElementById(`agentName`);n&&(n.value=t),document.querySelectorAll(`.agent-btn`).forEach(t=>{t.classList.toggle(`active`,t.dataset.agent===e)})}function w(t){e.currentHotel=t,document.querySelectorAll(`.hotel-btn`).forEach(e=>{e.classList.toggle(`active`,e.dataset.hotel===t)}),ae(t)}function T(){let t=document.getElementById(`guests-container`);if(!t)return;let n=g++;e.guests.set(n,{id:n,sharers:[]});let r=document.createElement(`div`);return r.className=`guest-card`,r.id=`guest-${n}`,r.innerHTML=`
     <div class="guest-header">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <div class="guest-number">${n}</div>
@@ -335,7 +322,7 @@ Please help to arrange bus seats as below:
 
 Name: ${t}
 ${o}
-Authorizer: ${n}`}var ue={room:{enabled:!0,icon:`🏨`,title:`Room Booking`},car:{enabled:!0,icon:`🚗`,title:`Car Service`},golf:{enabled:!0,icon:`⛳`,title:`Golf Booking`},bus:{enabled:!0,icon:`🚌`,title:`Bus Service`}};function de(){return ue}var G=`3.2.3`;function fe(){t(),pe(),me(),ye(),window.pidDatabase=new Map,window.oldPIDIndex=new Map,window.newPIDIndex=new Map,window.pidDatabaseLoaded=!1,console.log(`Booking App v${G} initialized`)}function pe(){let e=document.querySelector(`.app-header`);e&&(e.innerHTML=`
+Authorizer: ${n}`}var ue={room:{enabled:!0,icon:`🏨`,title:`Room Booking`},car:{enabled:!0,icon:`🚗`,title:`Car Service`},golf:{enabled:!0,icon:`⛳`,title:`Golf Booking`},bus:{enabled:!0,icon:`🚌`,title:`Bus Service`}};function de(){return ue}var G=`3.2.5`;function fe(){t(),pe(),me(),ye(),window.pidDatabase=new Map,window.oldPIDIndex=new Map,window.newPIDIndex=new Map,window.pidDatabaseLoaded=!1,console.log(`Booking App v${G} initialized`)}function pe(){let e=document.querySelector(`.app-header`);e&&(e.innerHTML=`
       <h1>🦾 A KANG TOOLS</h1>
       <div class="version">v${G} | ${Se()}</div>
     `)}function me(){let e=document.getElementById(`service-selector`);if(!e){console.error(`Service selector container not found`);return}try{let t=de();if(console.log(`Services loaded:`,t),!t||typeof t!=`object`){console.error(`Invalid services data:`,t),e.innerHTML=`<p style="color:red">Error loading services</p>`;return}let n=Object.entries(t).filter(([e,t])=>t&&t.enabled);if(console.log(`Filtered services:`,n),n.length===0){e.innerHTML=`<p>No services available</p>`;return}e.innerHTML=n.map(([e,t])=>`

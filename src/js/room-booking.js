@@ -82,18 +82,13 @@ function renderDateSelector() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="form-row">
-      <div class="form-group" style="flex: 1;">
-        <label>Stay Dates</label>
-        <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer;">
-        <input type="hidden" id="checkIn" value="${getTodayStr()}">
-        <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
-        <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
-      </div>
+    <div class="form-group">
+      <input type="text" id="dateRangePicker" placeholder="Check-in → Check-out" readonly class="form-input" style="cursor: pointer; text-align: center;">
+      <input type="hidden" id="checkIn" value="${getTodayStr()}">
+      <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
     </div>
   `;
 
-  // Initialize date picker after DOM update
   setTimeout(() => initDatePicker(), 0);
 }
 
@@ -134,7 +129,6 @@ function initDatePicker() {
 
   // Wait for Litepicker to be available
   if (typeof window.Litepicker === 'undefined') {
-    // Retry after a short delay
     setTimeout(() => initDatePicker(), 500);
     return;
   }
@@ -149,8 +143,10 @@ function initDatePicker() {
       singleMode: false,
       startDate: checkInEl.value,
       endDate: checkOutEl.value,
-      format: 'DD MMM YYYY',
+      format: 'DD MMM',
       delimiter: ' → ',
+      numberOfMonths: 2,
+      numberOfColumns: 2,
       tooltipText: { one: 'night', other: 'nights' },
       tooltipNumber: (totalDays) => totalDays - 1,
       setup: (picker) => {
@@ -164,28 +160,7 @@ function initDatePicker() {
   } catch (err) {
     console.error('Litepicker error:', err);
     // Fallback to native date inputs
-    pickerEl.style.display = 'none';
-    const fallbackDiv = document.createElement('div');
-    fallbackDiv.className = 'form-row';
-    fallbackDiv.innerHTML = `
-      <div class="form-group">
-        <label>Check In</label>
-        <input type="date" id="checkInNative" value="${getTodayStr()}" class="form-input">
-      </div>
-      <div class="form-group">
-        <label>Check Out</label>
-        <input type="date" id="checkOutNative" value="${getTomorrowStr()}" class="form-input">
-      </div>
-    `;
-    pickerEl.parentNode.appendChild(fallbackDiv);
-    
-    // Sync values
-    document.getElementById('checkInNative')?.addEventListener('change', (e) => {
-      checkInEl.value = e.target.value;
-    });
-    document.getElementById('checkOutNative')?.addEventListener('change', (e) => {
-      checkOutEl.value = e.target.value;
-    });
+    pickerEl.placeholder = 'Select dates';
   }
 }
 
@@ -194,13 +169,10 @@ function initDatePicker() {
  */
 function updateDateRangeText(checkIn, checkOut) {
   const pickerEl = document.getElementById('dateRangePicker');
-  const displayEl = document.getElementById('dateRangeDisplay');
-
-  if (!checkIn || !checkOut) return;
+  if (!pickerEl || !checkIn || !checkOut) return;
 
   const start = new Date(checkIn + 'T00:00:00');
   const end = new Date(checkOut + 'T00:00:00');
-  const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
 
   const formatDateShort = (date) => {
     const d = new Date(date);
@@ -208,15 +180,7 @@ function updateDateRangeText(checkIn, checkOut) {
     return `${d.getDate()} ${months[d.getMonth()]}`;
   };
 
-  if (pickerEl) {
-    pickerEl.value = `${formatDateShort(start)} → ${formatDateShort(end)}`;
-  }
-
-  if (displayEl && nights > 0) {
-    displayEl.textContent = `${nights} night${nights > 1 ? 's' : ''}`;
-  } else if (displayEl) {
-    displayEl.textContent = '';
-  }
+  pickerEl.value = `${formatDateShort(start)} → ${formatDateShort(end)}`;
 }
 
 /**
