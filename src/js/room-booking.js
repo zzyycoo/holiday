@@ -79,15 +79,23 @@ function renderDateSelector() {
   container.innerHTML = `
     <div class="form-row">
       <div class="form-group">
-        <label>Check In</label>
+        <label>Check In Date</label>
         <input type="date" id="checkIn" value="${getTodayStr()}" class="form-input">
       </div>
       <div class="form-group">
-        <label>Check Out</label>
+        <label>Check Out Date</label>
         <input type="date" id="checkOut" value="${getTomorrowStr()}" class="form-input">
       </div>
     </div>
   `;
+  
+  // Bind validation after DOM update
+  setTimeout(() => {
+    const checkOutEl = document.getElementById('checkOut');
+    if (checkOutEl) {
+      checkOutEl.addEventListener('blur', validateCheckOutDate);
+    }
+  }, 0);
 }
 
 /**
@@ -110,6 +118,32 @@ function renderAuthorizerSelector() {
       </datalist>
     </div>
   `;
+}
+
+/**
+ * Validate check-out date is after check-in date
+ */
+function validateCheckOutDate() {
+  const checkInEl = document.getElementById('checkIn');
+  const checkOutEl = document.getElementById('checkOut');
+  
+  if (!checkInEl || !checkOutEl) return true;
+  
+  const checkIn = checkInEl.value;
+  const checkOut = checkOutEl.value;
+  
+  if (!checkIn || !checkOut) return true;
+  
+  const checkInDate = new Date(checkIn + 'T00:00:00');
+  const checkOutDate = new Date(checkOut + 'T00:00:00');
+  
+  if (checkOutDate <= checkInDate) {
+    alert('Check-out date must be after check-in date');
+    checkOutEl.value = '';
+    return false;
+  }
+  
+  return true;
 }
 
 /**
