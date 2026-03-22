@@ -16,10 +16,10 @@ export function initRoomBooking() {
   renderHotelSelector();
   renderDateSelector();
   renderAuthorizerSelector();
-  
+
   // Add first guest by default
   addGuestForm();
-  
+
   // Bind add guest button
   const addBtn = document.getElementById('btn-add-guest');
   if (addBtn) {
@@ -35,7 +35,7 @@ function renderAgentSelector() {
   if (!container) return;
 
   const agents = getAgentQuickSelect();
-  
+
   container.innerHTML = `
     <div class="form-group" style="max-width: 200px;">
       <input list="agentList" id="agentName" placeholder="Agent" class="form-input" onclick="this.select()">
@@ -61,7 +61,7 @@ function renderHotelSelector() {
   if (!container) return;
 
   const hotels = getAllHotels();
-  
+
   container.innerHTML = Object.entries(hotels).map(([code, hotel]) => `
     <button type="button" class="quick-btn hotel-btn" data-hotel="${code}" onclick="window.app.selectHotel('${code}')">
       ${code}
@@ -79,14 +79,20 @@ function renderDateSelector() {
   container.innerHTML = `
     <div class="form-group">
       <label>Stay Dates</label>
-      <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer;">
+      <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;" onclick="window.initDateRangePicker(); if(window.dateRangePicker){window.dateRangePicker.show();}else{alert('Loading calendar...');}">
       <input type="hidden" id="checkIn" value="${getTodayStr()}">
       <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
     </div>
   `;
 
-  setTimeout(() => initDateRangePicker(), 100);
+  setTimeout(() => {
+    initDateRangePicker();
+    // Retry after window load to ensure Litepicker is ready
+    if (typeof Litepicker === 'undefined') {
+      window.addEventListener('load', initDateRangePicker);
+    }
+  }, 50);
 }
 
 /**
@@ -114,9 +120,13 @@ function renderAuthorizerSelector() {
 /**
  * Initialize Litepicker date range picker
  */
-let dateRangePicker = null;
-
 function initDateRangePicker() {
+  // If already initialized, just show it
+  if (window.dateRangePicker && typeof window.dateRangePicker.show === 'function') {
+    window.dateRangePicker.show();
+    return;
+  }
+  
   const pickerEl = document.getElementById('dateRangePicker');
   const checkInEl = document.getElementById('checkIn');
   const checkOutEl = document.getElementById('checkOut');
@@ -130,48 +140,47 @@ function initDateRangePicker() {
   updateDateRangeText(checkInEl.value, checkOutEl.value);
 
   // Check if Litepicker is loaded
-  if (typeof window.Litepicker === 'undefined') {
-    console.log('Litepicker not loaded yet, retrying...');
-    setTimeout(() => initDateRangePicker(), 500);
+  if (typeof Litepicker === 'undefined') {
+    console.log('Litepicker not loaded, retrying...');
+    setTimeout(initDateRangePicker, 300);
     return;
   }
 
   // Destroy existing picker if any
-  if (dateRangePicker) {
-    dateRangePicker.destroy();
+  if (window.dateRangePicker) {
+    window.dateRangePicker.destroy();
   }
 
-  try {
-    dateRangePicker = new window.Litepicker({
-      element: pickerEl,
-      singleMode: false,
-      startDate: checkInEl.value,
-      endDate: checkOutEl.value,
-      format: 'DD MMM YYYY',
-      delimiter: ' → ',
-      tooltipText: { one: 'night', other: 'nights' },
-      tooltipNumber: (totalDays) => totalDays - 1,
-      setup: (picker) => {
-        picker.on('selected', (startDate, endDate) => {
-          checkInEl.value = startDate.format('YYYY-MM-DD');
-          checkOutEl.value = endDate.format('YYYY-MM-DD');
-          updateDateRangeText(checkInEl.value, checkOutEl.value);
-        });
-      }
-    });
-    
-    // Ensure picker shows on click
-    pickerEl.addEventListener('click', () => {
-      if (dateRangePicker && !dateRangePicker.isShown) {
-        dateRangePicker.show();
-      }
-    });
-    
-    console.log('Litepicker initialized successfully');
-  } catch (err) {
-    console.error('Litepicker init error:', err);
-  }
+  window.dateRangePicker = new Litepicker({
+    element: pickerEl,
+    singleMode: false,
+    startDate: checkInEl.value,
+    endDate: checkOutEl.value,
+    format: 'DD MMM YYYY',
+    delimiter: ' → ',
+    tooltipText: { one: 'night', other: 'nights' },
+    tooltipNumber: (totalDays) => totalDays - 1,
+    setup: (picker) => {
+      picker.on('selected', (startDate, endDate) => {
+        checkInEl.value = startDate.format('YYYY-MM-DD');
+        checkOutEl.value = endDate.format('YYYY-MM-DD');
+        updateDateRangeText(checkInEl.value, checkOutEl.value);
+      });
+    }
+  });
+  
+  // Auto-show after initialization
+  setTimeout(() => {
+    if (window.dateRangePicker && typeof window.dateRangePicker.show === 'function') {
+      window.dateRangePicker.show();
+    }
+  }, 50);
+
+  console.log('Litepicker initialized');
 }
+
+// Expose to window for onclick handler
+window.initDateRangePicker = initDateRangePicker;
 
 /**
  * Update date range display text
@@ -208,7 +217,7 @@ export function setAgent(code, name) {
   if (agentInput) {
     agentInput.value = name;
   }
-  
+
   // Update button active states
   document.querySelectorAll('.agent-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.agent === code);
@@ -220,12 +229,12 @@ export function setAgent(code, name) {
  */
 export function selectHotel(hotelCode) {
   state.currentHotel = hotelCode;
-  
+
   // Update button active states
   document.querySelectorAll('.hotel-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.hotel === hotelCode);
   });
-  
+
   // Update all guest room type selectors
   updateAllRoomTypeSelectors(hotelCode);
 }
@@ -236,10 +245,10 @@ export function selectHotel(hotelCode) {
 export function addGuestForm() {
   const container = document.getElementById('guests-container');
   if (!container) return;
-  
+
   const id = guestIdCounter++;
   state.guests.set(id, { id, sharers: [] });
-  
+
   const guestDiv = document.createElement('div');
   guestDiv.className = 'guest-card';
   guestDiv.id = `guest-${id}`;
@@ -276,14 +285,14 @@ export function addGuestForm() {
       </button>
     </div>
   `;
-  
+
   container.appendChild(guestDiv);
-  
+
   // If a hotel is selected, update room types
   if (state.currentHotel) {
     updateRoomTypeSelector(id, state.currentHotel);
   }
-  
+
   return id;
 }
 
@@ -304,13 +313,13 @@ export function removeGuestForm(id) {
 export function addSharerForm(guestId) {
   const guest = state.guests.get(guestId);
   if (!guest) return;
-  
+
   const sharerId = guest.sharers.length + 1;
   guest.sharers.push(sharerId);
-  
+
   const container = document.getElementById(`sharerContainer-${guestId}`);
   if (!container) return;
-  
+
   const sharerDiv = document.createElement('div');
   sharerDiv.className = 'sharer-form';
   sharerDiv.id = `sharer-${guestId}-${sharerId}`;
@@ -329,7 +338,7 @@ export function addSharerForm(guestId) {
     </div>
     <div id="sharerPidInfo-${guestId}-${sharerId}" class="pid-info-box"></div>
   `;
-  
+
   container.appendChild(sharerDiv);
 }
 
@@ -341,7 +350,7 @@ export function removeSharerForm(guestId, sharerId) {
   if (sharerDiv) {
     sharerDiv.remove();
   }
-  
+
   const guest = state.guests.get(guestId);
   if (guest) {
     guest.sharers = guest.sharers.filter(id => id !== sharerId);
@@ -359,14 +368,14 @@ function updateRoomTypeSelector(guestId, hotelCode) {
   const quickTypes = getQuickRoomTypes(hotelCode);
   const hotels = getAllHotels();
   const hotel = hotels[hotelCode];
-  
+
   // Generate quick buttons
   buttonsContainer.innerHTML = quickTypes.map(type => `
     <button type="button" class="quick-btn room-type-btn" onclick="window.app.setRoomType(${guestId}, '${type}')">
       ${type}
     </button>
   `).join('');
-  
+
   // Update dropdown with optgroups
   select.innerHTML = '<option value="">Select Room Type</option>';
   if (hotel && hotel.roomTypes) {
@@ -402,7 +411,7 @@ export function setRoomType(guestId, type) {
   if (input) {
     input.value = type;
   }
-  
+
   // Update button active states
   const buttonsContainer = document.getElementById(`roomTypeButtons-${guestId}`);
   if (buttonsContainer) {
@@ -410,7 +419,7 @@ export function setRoomType(guestId, type) {
       btn.classList.toggle('active', btn.textContent.trim() === type);
     });
   }
-  
+
   // Update dropdown
   const select = document.getElementById(`roomTypeSelect-${guestId}`);
   if (select) select.value = type;
@@ -430,17 +439,17 @@ export function setRoomTypeFromSelect(guestId, type) {
 let pidSearchTimeout = null;
 export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) {
   clearTimeout(pidSearchTimeout);
-  
+
   const oldPIDInput = document.getElementById(oldPIDInputId);
   const newPIDInput = document.getElementById(newPIDInputId);
   const nameInput = document.getElementById(nameInputId);
   const infoBox = document.getElementById(infoBoxId);
-  
+
   if (!oldPIDInput || !newPIDInput || !nameInput) return;
-  
+
   const oldPID = oldPIDInput.value.trim();
   const newPID = newPIDInput.value.trim();
-  
+
   // Clear previous states
   oldPIDInput.classList.remove('pid-found', 'pid-not-found', 'pid-searching');
   newPIDInput.classList.remove('pid-found', 'pid-not-found', 'pid-searching');
@@ -448,14 +457,14 @@ export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) 
     infoBox.style.display = 'none';
     infoBox.className = 'pid-info-box';
   }
-  
+
   // If both empty, clear name
   if (!oldPID && !newPID) {
     nameInput.value = '';
     nameInput.readOnly = false;
     return;
   }
-  
+
   // Check if PID database is loaded
   if (!window.pidDatabaseLoaded) {
     if (infoBox) {
@@ -466,15 +475,15 @@ export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) 
     nameInput.readOnly = false;
     return;
   }
-  
+
   // Show searching state
   if (oldPID) oldPIDInput.classList.add('pid-searching');
   if (newPID) newPIDInput.classList.add('pid-searching');
-  
+
   pidSearchTimeout = setTimeout(() => {
     let result = null;
     let searchedBy = '';
-    
+
     // Search by Old PID first
     if (oldPID && window.oldPIDIndex) {
       const uniqueID = window.oldPIDIndex.get(oldPID);
@@ -483,7 +492,7 @@ export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) 
         searchedBy = 'old';
       }
     }
-    
+
     // If not found, search by New PID
     if (!result && newPID && window.newPIDIndex) {
       const uniqueID = window.newPIDIndex.get(newPID);
@@ -492,25 +501,25 @@ export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) 
         searchedBy = 'new';
       }
     }
-    
+
     oldPIDInput.classList.remove('pid-searching');
     newPIDInput.classList.remove('pid-searching');
-    
+
     if (result) {
       // Found - auto-fill all fields
       oldPIDInput.classList.add('pid-found');
       newPIDInput.classList.add('pid-found');
-      
+
       if (result.oldPID && !oldPID) {
         oldPIDInput.value = result.oldPID;
       }
       if (result.newPID && !newPID) {
         newPIDInput.value = result.newPID;
       }
-      
+
       nameInput.value = result.name.toUpperCase();
       nameInput.readOnly = true;
-      
+
       if (infoBox) {
         infoBox.className = 'pid-info-box success';
         infoBox.innerHTML = `✅ Found by ${searchedBy === 'old' ? 'Old PID' : 'New PID'}: <strong>${result.name}</strong>`;
@@ -522,7 +531,7 @@ export function searchPID(oldPIDInputId, newPIDInputId, nameInputId, infoBoxId) 
       newPIDInput.classList.add('pid-not-found');
       nameInput.value = '';
       nameInput.readOnly = false;
-      
+
       if (infoBox) {
         infoBox.className = 'pid-info-box warning';
         infoBox.innerHTML = '⚠️ PID not found in database';
@@ -541,7 +550,7 @@ export function generateRoomEmail() {
   const authorizer = document.getElementById('authorizer')?.value?.trim() || 'Jian.Xu';
   const checkIn = document.getElementById('checkIn')?.value;
   const checkOut = document.getElementById('checkOut')?.value;
-  
+
   if (!agent) {
     throw new Error('Please enter agent name');
   }
@@ -551,38 +560,38 @@ export function generateRoomEmail() {
   if (!checkIn || !checkOut) {
     throw new Error('Please select check-in and check-out dates');
   }
-  
+
   const checkInFormatted = formatDate(checkIn);
   const checkOutFormatted = formatDate(checkOut);
-  
+
   let guestLines = [];
   let roomLines = [];
   let promotions = [];
   let firstGuestPID = '';
   let firstGuestName = '';
-  
+
   // Process each guest
   state.guests.forEach((guest, id) => {
     const guestDiv = document.getElementById(`guest-${id}`);
     if (!guestDiv) return; // Skip removed guests
-    
+
     const name = document.getElementById(`guestName-${id}`)?.value?.trim();
     const oldPID = document.getElementById(`guestOldPID-${id}`)?.value?.trim() || '';
     const newPID = document.getElementById(`guestNewPID-${id}`)?.value?.trim() || '';
     const roomType = document.getElementById(`roomType-${id}`)?.value;
-    
+
     if (!name || !roomType) return; // Skip incomplete guests
-    
+
     const pidDisplay = resolvePID(oldPID, newPID);
-    
+
     // Track first guest for subject line
     if (!firstGuestName) {
       firstGuestPID = pidDisplay;
       firstGuestName = name;
     }
-    
+
     let guestLine = `${name} - ${pidDisplay}`;
-    
+
     // Add sharers
     guest.sharers.forEach(sharerId => {
       const sharerName = document.getElementById(`sharerName-${id}-${sharerId}`)?.value?.trim();
@@ -593,24 +602,24 @@ export function generateRoomEmail() {
         guestLine += `\n(Sharer: ${sharerName} - ${finalSharerPID})`;
       }
     });
-    
+
     guestLines.push(guestLine);
     roomLines.push(`${name} - ${roomType}`);
-    
+
     // Get promotion for this room type
     const promotion = getPromotion(hotel, roomType);
     if (promotion && !promotions.includes(promotion)) {
       promotions.push(promotion);
     }
   });
-  
+
   if (guestLines.length === 0) {
     throw new Error('Please add at least one complete guest');
   }
-  
+
   const subject = `[${agent}] ${firstGuestPID} ${firstGuestName} ${hotel} Hotel Room Booking on ${checkInFormatted}`;
   const promotionDisplay = promotions.join('/');
-  
+
   return `Subject: ${subject}
 
 Dear team
@@ -633,30 +642,30 @@ Trip authorizer: ${authorizer}`;
  */
 export function validateRoomForm() {
   const errors = [];
-  
+
   const agent = document.getElementById('agentName')?.value?.trim();
   if (!agent) errors.push('Agent name is required');
-  
+
   if (!state.currentHotel) errors.push('Please select a hotel');
-  
+
   const checkIn = document.getElementById('checkIn')?.value;
   const checkOut = document.getElementById('checkOut')?.value;
   if (!checkIn || !checkOut) errors.push('Check-in and check-out dates are required');
-  
+
   let hasValidGuest = false;
   state.guests.forEach((guest, id) => {
     const guestDiv = document.getElementById(`guest-${id}`);
     if (!guestDiv) return;
-    
+
     const name = document.getElementById(`guestName-${id}`)?.value?.trim();
     const roomType = document.getElementById(`roomType-${id}`)?.value;
-    
+
     if (name && roomType) {
       hasValidGuest = true;
     }
   });
-  
+
   if (!hasValidGuest) errors.push('Please add at least one complete guest with name and room type');
-  
+
   return errors;
 }
