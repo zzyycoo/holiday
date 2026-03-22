@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.14] - 2026-03-23
+
+### Fixed
+- 📅 **A171 Single Date Picker** - Fixed date picker not popping up
+  - Replaced native `input[type="date"]` with Litepicker for consistency
+  - Added touch-friendly click handler with auto-show
+  - Fixed date format display and ISO date storage
+
 ## [3.2.0] - 2026-03-22
 
 ### Changed
