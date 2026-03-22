@@ -1,13 +1,13 @@
 /**
  * Main application entry
- * Hotel Service Booking System v3.0
+ * Hotel Service Booking System v3.1.0
  */
 import './css/variables.css';
 import './css/layout.css';
 import './css/forms.css';
 import './css/components.css';
 
-import { initState, toggleService, isServiceSelected, state } from './js/state.js';
+import { initState, toggleService, isServiceSelected, state, setA171Mode } from './js/state.js';
 import { getAgentQuickSelect } from './js/hotels.js';
 import { formatDate, formatDateShort, getTodayStr, getTomorrowStr, resolvePID } from './js/utils.js';
 import { 
@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.0.0';
+const VERSION = '3.1.0';
 
 /**
  * Initialize application
@@ -211,6 +211,9 @@ function initSection(service) {
     case 'bus':
       initBusService();
       break;
+    case 'a171':
+      initA171Mode();
+      break;
   }
 }
 
@@ -297,6 +300,16 @@ function generateAllEmails() {
       if (!subject) {
         const subjectMatch = busEmail.match(/Subject:\s*(.+?)\n/);
         subject = subjectMatch ? subjectMatch[1].trim() : 'Bus Service Request';
+      }
+    }
+    
+    if (isServiceSelected('a171')) {
+      const a171Email = generateA171Email();
+      emails.push(a171Email);
+      
+      if (!subject) {
+        const subjectMatch = a171Email.match(/Subject:\s*(.+?)\n/);
+        subject = subjectMatch ? subjectMatch[1].trim() : 'Patron Registration';
       }
     }
     
@@ -487,6 +500,14 @@ function handlePIDImport(event) {
       });
       
       window.pidDatabaseLoaded = true;
+      
+      // Update status display
+      const statusEl = document.getElementById('pid-status');
+      if (statusEl) {
+        statusEl.textContent = `${count.toLocaleString()} records loaded ✓`;
+        statusEl.style.color = 'var(--success)';
+      }
+      
       showToast(`✓ ${count.toLocaleString()} PID records loaded`, 'success');
       
     } catch (error) {
@@ -495,6 +516,100 @@ function handlePIDImport(event) {
     }
   };
   reader.readAsArrayBuffer(file);
+}
+
+// A171 One Day Trip Mode
+let a171PatronCount = 0;
+let a171Patrons = new Map();
+
+function initA171Mode() {
+  setA171Mode(true);
+  a171PatronCount = 0;
+  a171Patrons.clear();
+  
+  // Set today's date as default
+  const dateEl = document.getElementById('a171-date');
+  if (dateEl) dateEl.value = getTodayStr();
+  
+  // Add first patron
+  addA171Patron();
+}
+
+function addA171Patron() {
+  const id = ++a171PatronCount;
+  a171Patrons.set(id, { id });
+  
+  const container = document.getElementById('a171-patrons-container');
+  if (!container) return;
+  
+  const patronDiv = document.createElement('div');
+  patronDiv.id = `a171-patron-${id}`;
+  patronDiv.className = 'guest-form';
+  patronDiv.style.cssText = 'margin-bottom: 1rem; padding: 1rem; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border);';
+  
+  patronDiv.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-weight: 600;">Patron #${id}</span>
+      ${id > 1 ? `<button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeA171Patron(${id})">Remove</button>` : ''}
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <input type="text" id="a171-patron-name-${id}" placeholder="Name" class="form-input">
+      </div>
+      <div class="form-group">
+        <input type="text" id="a171-patron-oldpid-${id}" placeholder="Old PID" class="form-input short">
+      </div>
+      <div class="form-group">
+        <input type="text" id="a171-patron-newpid-${id}" placeholder="New PID" class="form-input short">
+      </div>
+    </div>
+  `;
+  
+  container.appendChild(patronDiv);
+}
+
+function removeA171Patron(id) {
+  a171Patrons.delete(id);
+  const el = document.getElementById(`a171-patron-${id}`);
+  if (el) el.remove();
+}
+
+function generateA171Email() {
+  const agent = document.getElementById('a171-agent')?.value?.trim() || 'A171';
+  const subjectType = document.getElementById('a171-subject-type')?.value || 'patron';
+  const date = document.getElementById('a171-date')?.value;
+  const authorizer = document.getElementById('a171-authorizer')?.value?.trim() || 'Jian.Xu';
+  
+  if (!date) throw new Error('Please select date');
+  
+  const patrons = [];
+  a171Patrons.forEach((_, id) => {
+    const name = document.getElementById(`a171-patron-name-${id}`)?.value?.trim();
+    if (name) {
+      const oldPID = document.getElementById(`a171-patron-oldpid-${id}`)?.value?.trim() || '';
+      const newPID = document.getElementById(`a171-patron-newpid-${id}`)?.value?.trim() || '';
+      const pidStr = resolvePID(oldPID, newPID);
+      patrons.push({ name, pid: pidStr, oldPID, newPID });
+    }
+  });
+  
+  if (patrons.length === 0) throw new Error('Please add at least one patron');
+  
+  const firstPatron = patrons[0];
+  const dateStr = formatDateShort(date);
+  
+  let subject, body;
+  
+  if (subjectType === 'onedaytrip') {
+    subject = `[${agent}] ${firstPatron.pid} ${firstPatron.name} One Day Trip ${dateStr}`;
+    body = patrons.map(p => `Please note that the guest one day trip: ${p.name} - ${p.pid}`).join('\n');
+  } else {
+    subject = `[${agent}] ${firstPatron.pid} ${firstPatron.name} Patron Registration ${dateStr}`;
+    body = `Please kindly help to arrange patron registration as follows:\n\n` + 
+           patrons.map(p => `- ${p.name} - ${p.pid}`).join('\n');
+  }
+  
+  return `Subject: ${subject}\n\n${body}\n\nAuthorizer: ${authorizer}\n\nThank you`;
 }
 
 // Export to window for inline onclick handlers and global access
@@ -526,6 +641,10 @@ window.app = {
   
   // Bus service
   toggleBusRoute,
+  
+  // A171 One Day Trip
+  addA171Patron,
+  removeA171Patron,
   
   // Global actions
   generateAllEmails,

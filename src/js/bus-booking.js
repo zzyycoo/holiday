@@ -182,8 +182,5 @@ export function syncBusPassenger() {
   }
 }
 
-// Export to window
-window.app.toggleBusRoute = toggleRoute;
-
 // Export alias for main.js
 export { toggleRoute as toggleBusRoute };

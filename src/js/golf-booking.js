@@ -261,8 +261,3 @@ Authorizer: ${authorizer}
 
 Thank you`;
 }
-
-// Export to window
-window.app.removeGolfGuestForm = removeGolfGuestForm;
-window.app.updateGolfPax = updateGolfPax;
-window.app.syncGolfGuests = syncGolfGuests;

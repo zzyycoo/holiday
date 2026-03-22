@@ -17,14 +17,40 @@
   
   <!-- Litepicker for date range selection -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
+  
+  <!-- SheetJS for Excel file reading -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
       <h1>🏨 Hotel Service Booking System</h1>
-      <div class="version">v3.0.0 | Modular Vite Architecture</div>
+      <div class="version">v3.1.0 | Modular Vite + A171 + PID Import</div>
     </header>
+
+    <!-- PID Database Import -->
+    <section class="section" style="background: var(--surface); padding: 0.75rem 1rem;">
+      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <label style="font-weight: 600; color: var(--primary); font-size: 0.9rem;">📊 PID Database:</label>
+        <input type="file" id="pid-file-input" accept=".xlsx,.xls" style="display: none;" onchange="window.app.handlePIDImport(event)">
+        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('pid-file-input').click()">
+          Import Excel
+        </button>
+        <span id="pid-status" style="font-size: 0.8rem; color: var(--text-secondary);">No database loaded</span>
+      </div>
+    </section>
+
+    <!-- A171 One Day Trip Mode -->
+    <section class="section" id="a171-entry" style="background: linear-gradient(135deg, #fff9e6 0%, #fff4d6 100%); border: 2px solid var(--secondary);">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">🌅 ONE DAY TRIP — Patron Registration</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Patron visit without room booking</p>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="window.app.selectService('a171')">Enter →</button>
+      </div>
+    </section>
 
     <!-- Service Selector -->
     <section class="section">
@@ -191,6 +217,53 @@
       <div class="form-group" style="margin-top: 1rem;">
         <label>Authorizer</label>
         <input type="text" id="bus-authorizer" value="Jian.Xu" class="form-input">
+      </div>
+    </section>
+
+    <!-- A171 One Day Trip Section -->
+    <section id="a171-section" class="section" style="display: none;">
+      <h2 class="section-title">🌅 ONE DAY TRIP — Patron Registration</h2>
+      
+      <!-- Agent Selector -->
+      <div class="form-group">
+        <label>Agent</label>
+        <input list="agentList" id="a171-agent" placeholder="Enter agent code" class="form-input">
+        <datalist id="agentList">
+          <option value="A171 Pham Duc Huy">
+          <option value="A171 Le Cong Ly Thanh">
+          <option value="IM">
+          <option value="A03">
+          <option value="A40">
+        </datalist>
+      </div>
+      
+      <!-- Subject Type -->
+      <div class="form-group">
+        <label>Subject Type</label>
+        <select id="a171-subject-type" class="form-input">
+          <option value="patron">Patron</option>
+          <option value="onedaytrip">One Day Trip</option>
+        </select>
+      </div>
+      
+      <!-- Patron List -->
+      <h3 class="section-subtitle">👥 Patron List</h3>
+      <div id="a171-patrons-container"></div>
+      
+      <div class="btn-group" style="margin-top: 1rem;">
+        <button type="button" class="btn btn-outline" onclick="window.app.addA171Patron()">
+          <span>+</span> Add Patron
+        </button>
+      </div>
+      
+      <div class="form-group" style="margin-top: 1rem;">
+        <label>Date</label>
+        <input type="date" id="a171-date" class="form-input">
+      </div>
+      
+      <div class="form-group">
+        <label>Authorizer</label>
+        <input type="text" id="a171-authorizer" value="Jian.Xu" class="form-input">
       </div>
     </section>
 

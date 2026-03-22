@@ -132,13 +132,19 @@ function initDatePicker() {
   // Set initial display
   updateDateRangeText(checkInEl.value, checkOutEl.value);
 
-  // Check if Litepicker is available
-  if (typeof Litepicker !== 'undefined') {
+  // Wait for Litepicker to be available
+  if (typeof window.Litepicker === 'undefined') {
+    // Retry after a short delay
+    setTimeout(() => initDatePicker(), 500);
+    return;
+  }
+
+  try {
     if (dateRangePicker) {
       dateRangePicker.destroy();
     }
 
-    dateRangePicker = new Litepicker({
+    dateRangePicker = new window.Litepicker({
       element: pickerEl,
       singleMode: false,
       startDate: checkInEl.value,
@@ -155,7 +161,8 @@ function initDatePicker() {
         });
       }
     });
-  } else {
+  } catch (err) {
+    console.error('Litepicker error:', err);
     // Fallback to native date inputs
     pickerEl.style.display = 'none';
     const fallbackDiv = document.createElement('div');
@@ -714,13 +721,3 @@ export function validateRoomForm() {
   
   return errors;
 }
-
-// Export to window for inline onclick handlers
-window.app.setAgent = setAgent;
-window.app.selectHotel = selectHotel;
-window.app.removeGuestForm = removeGuestForm;
-window.app.addSharerForm = addSharerForm;
-window.app.removeSharerForm = removeSharerForm;
-window.app.setRoomType = setRoomType;
-window.app.setRoomTypeFromSelect = setRoomTypeFromSelect;
-window.app.searchPID = searchPID;

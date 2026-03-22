@@ -279,7 +279,3 @@ Authorizer: ${authorizer}
 
 Thank you`;
 }
-
-// Export to window
-window.app.removeCarForm = removeCarForm;
-window.app.setLocation = setLocation;
