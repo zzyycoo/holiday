@@ -7,7 +7,6 @@ import { getAllHotels, getQuickRoomTypes, getPromotion, getAgentQuickSelect } fr
 import { formatDate, formatDateShort, getTodayStr, getTomorrowStr, resolvePID } from './utils.js';
 
 let guestIdCounter = 1;
-let dateRangePicker = null;
 
 /**
  * Initialize room booking section
@@ -78,14 +77,17 @@ function renderDateSelector() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="form-group">
-      <input type="text" id="dateRangePicker" placeholder="Check-in → Check-out" readonly class="form-input" style="cursor: pointer; text-align: center;">
-      <input type="hidden" id="checkIn" value="${getTodayStr()}">
-      <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Check In</label>
+        <input type="date" id="checkIn" value="${getTodayStr()}" class="form-input">
+      </div>
+      <div class="form-group">
+        <label>Check Out</label>
+        <input type="date" id="checkOut" value="${getTomorrowStr()}" class="form-input">
+      </div>
     </div>
   `;
-
-  setTimeout(() => initDatePicker(), 0);
 }
 
 /**
@@ -108,89 +110,6 @@ function renderAuthorizerSelector() {
       </datalist>
     </div>
   `;
-}
-
-/**
- * Initialize Litepicker date range picker
- */
-function initDatePicker() {
-  const pickerEl = document.getElementById('dateRangePicker');
-  const checkInEl = document.getElementById('checkIn');
-  const checkOutEl = document.getElementById('checkOut');
-
-  if (!pickerEl || !checkInEl || !checkOutEl) {
-    console.error('Date picker elements not found');
-    return;
-  }
-
-  // Set initial display
-  updateDateRangeText(checkInEl.value, checkOutEl.value);
-
-  // Wait for Litepicker to be available
-  if (typeof window.Litepicker === 'undefined') {
-    console.log('Waiting for Litepicker...');
-    setTimeout(() => initDatePicker(), 500);
-    return;
-  }
-
-  try {
-    if (dateRangePicker) {
-      dateRangePicker.destroy();
-    }
-
-    dateRangePicker = new window.Litepicker({
-      element: pickerEl,
-      singleMode: false,
-      startDate: checkInEl.value,
-      endDate: checkOutEl.value,
-      format: 'DD MMM',
-      delimiter: ' → ',
-      numberOfMonths: 1,
-      numberOfColumns: 1,
-      tooltipText: { one: 'night', other: 'nights' },
-      tooltipNumber: (totalDays) => totalDays - 1
-    });
-    
-    // Handle selection
-    pickerEl.addEventListener('click', () => {
-      if (dateRangePicker && !dateRangePicker.isShown) {
-        dateRangePicker.show();
-      }
-    });
-    
-    // Listen for changes via event delegation
-    document.addEventListener('litepicker:selected', (e) => {
-      if (e.detail && e.detail.startDate && e.detail.endDate) {
-        checkInEl.value = e.detail.startDate.format('YYYY-MM-DD');
-        checkOutEl.value = e.detail.endDate.format('YYYY-MM-DD');
-        updateDateRangeText(checkInEl.value, checkOutEl.value);
-      }
-    });
-    
-    console.log('Date picker initialized');
-  } catch (err) {
-    console.error('Litepicker error:', err);
-    pickerEl.placeholder = 'Select dates';
-  }
-}
-
-/**
- * Update date range display text
- */
-function updateDateRangeText(checkIn, checkOut) {
-  const pickerEl = document.getElementById('dateRangePicker');
-  if (!pickerEl || !checkIn || !checkOut) return;
-
-  const start = new Date(checkIn + 'T00:00:00');
-  const end = new Date(checkOut + 'T00:00:00');
-
-  const formatDateShort = (date) => {
-    const d = new Date(date);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${d.getDate()} ${months[d.getMonth()]}`;
-  };
-
-  pickerEl.value = `${formatDateShort(start)} → ${formatDateShort(end)}`;
 }
 
 /**
