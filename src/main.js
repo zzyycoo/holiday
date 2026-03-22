@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.2.13';
+const VERSION = '3.2.15';
 
 /**
  * Initialize application
@@ -157,11 +157,11 @@ function selectService(service) {
   const isSelected = toggleService(service);
   
   if (isSelected) {
-    card.classList.add('selected');
+    if (card) card.classList.add('selected');
     showSection(service);
     initSection(service);
   } else {
-    card.classList.remove('selected');
+    if (card) card.classList.remove('selected');
     hideSection(service);
   }
 }
