@@ -53,84 +53,49 @@
       </div>
     `,e.parentNode.appendChild(i),document.getElementById(`checkInNative`)?.addEventListener(`change`,e=>{t.value=e.target.value}),document.getElementById(`checkOutNative`)?.addEventListener(`change`,e=>{n.value=e.target.value})}}}function C(e,t){let n=document.getElementById(`dateRangePicker`),r=document.getElementById(`dateRangeDisplay`);if(!e||!t)return;let i=new Date(e+`T00:00:00`),a=new Date(t+`T00:00:00`),o=Math.round((a-i)/(1e3*60*60*24)),s=e=>{let t=new Date(e);return`${t.getDate()} ${[`Jan`,`Feb`,`Mar`,`Apr`,`May`,`Jun`,`Jul`,`Aug`,`Sep`,`Oct`,`Nov`,`Dec`][t.getMonth()]}`};n&&(n.value=`${s(i)} → ${s(a)}`),r&&o>0?r.textContent=`${o} night${o>1?`s`:``}`:r&&(r.textContent=``)}function te(e,t){let n=document.getElementById(`agentName`);n&&(n.value=t),document.querySelectorAll(`.agent-btn`).forEach(t=>{t.classList.toggle(`active`,t.dataset.agent===e)})}function w(t){e.currentHotel=t,document.querySelectorAll(`.hotel-btn`).forEach(e=>{e.classList.toggle(`active`,e.dataset.hotel===t)}),ae(t)}function T(){let t=document.getElementById(`guests-container`);if(!t)return;let n=g++;e.guests.set(n,{id:n,sharers:[]});let r=document.createElement(`div`);return r.className=`guest-card`,r.id=`guest-${n}`,r.innerHTML=`
     <div class="guest-header">
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
         <div class="guest-number">${n}</div>
         <span class="guest-title">Guest ${n}</span>
       </div>
-      <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeGuestForm(${n})">
-        Remove
-      </button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeGuestForm(${n})">×</button>
     </div>
-    <div class="guest-fields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Old PID</label>
-          <div class="pid-input-wrapper">
-            <input type="text" id="guestOldPID-${n}" class="pid-input" placeholder="Old PID"
-                   oninput="window.app.searchPID('guestOldPID-${n}', 'guestNewPID-${n}', 'guestName-${n}', 'pidInfo-${n}')">
-            <span class="pid-status-icon" id="oldPidIcon-${n}"></span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>New PID</label>
-          <div class="pid-input-wrapper">
-            <input type="text" id="guestNewPID-${n}" class="pid-input" placeholder="New PID"
-                   oninput="window.app.searchPID('guestOldPID-${n}', 'guestNewPID-${n}', 'guestName-${n}', 'pidInfo-${n}')">
-            <span class="pid-status-icon" id="newPidIcon-${n}"></span>
-          </div>
-          <div id="pidInfo-${n}" class="pid-info-box"></div>
-        </div>
-        <div class="form-group">
-          <label>Guest Name *</label>
-          <input type="text" id="guestName-${n}" class="required-field" placeholder="Guest Name"
-                 oninput="this.value = this.value.toUpperCase()">
-        </div>
+    <div class="guest-fields" style="margin-top: 0.5rem;">
+      <div class="form-row" style="gap: 0.5rem;">
+        <input type="text" id="guestOldPID-${n}" class="pid-input short" placeholder="Old PID"
+               oninput="window.app.searchPID('guestOldPID-${n}', 'guestNewPID-${n}', 'guestName-${n}', 'pidInfo-${n}')">
+        <input type="text" id="guestNewPID-${n}" class="pid-input short" placeholder="New PID"
+               oninput="window.app.searchPID('guestOldPID-${n}', 'guestNewPID-${n}', 'guestName-${n}', 'pidInfo-${n}')">
+        <input type="text" id="guestName-${n}" placeholder="Guest Name"
+               oninput="this.value = this.value.toUpperCase()">
       </div>
-      <div class="form-group">
-        <label>Room Type *</label>
-        <input type="hidden" id="roomType-${n}">
-        <div class="quick-roomtype-buttons" id="roomTypeButtons-${n}" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-          <!-- Room type buttons will be generated here -->
-        </div>
-        <select id="roomTypeSelect-${n}" class="form-input" onchange="window.app.setRoomTypeFromSelect(${n}, this.value)">
-          <option value="">Select Room Type</option>
-        </select>
+      <div id="pidInfo-${n}" class="pid-info-box"></div>
+      <input type="hidden" id="roomType-${n}">
+      <div class="quick-roomtype-buttons" id="roomTypeButtons-${n}" style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin: 0.5rem 0;">
+        <!-- Room type buttons will be generated here -->
       </div>
+      <select id="roomTypeSelect-${n}" class="form-input" onchange="window.app.setRoomTypeFromSelect(${n}, this.value)">
+        <option value="">Select Room Type</option>
+      </select>
     </div>
-    <div class="sharer-section" id="sharerSection-${n}" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+    <div class="sharer-section" id="sharerSection-${n}" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border);">
       <div id="sharerContainer-${n}"></div>
-      <button type="button" class="btn-sharer" onclick="window.app.addSharerForm(${n})" style="margin-top: 0.5rem;">
-        <span class="sharer-icon">👥</span> Add Sharer
+      <button type="button" class="btn btn-outline btn-sm" onclick="window.app.addSharerForm(${n})" style="margin-top: 0.5rem;">
+        + Sharer
       </button>
     </div>
-  `,t.appendChild(r),e.currentHotel&&E(n,e.currentHotel),n}function ne(t){let n=document.getElementById(`guest-${t}`);n&&(n.remove(),e.guests.delete(t))}function re(t){let n=e.guests.get(t);if(!n)return;let r=n.sharers.length+1;n.sharers.push(r);let i=document.getElementById(`sharerContainer-${t}`);if(!i)return;let a=document.createElement(`div`);a.className=`sharer-form`,a.id=`sharer-${t}-${r}`,a.style.cssText=`background: #f8f9fa; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem;`,a.innerHTML=`
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-      <span style="font-weight: 600; color: var(--primary);">Sharer #${r}</span>
+  `,t.appendChild(r),e.currentHotel&&E(n,e.currentHotel),n}function ne(t){let n=document.getElementById(`guest-${t}`);n&&(n.remove(),e.guests.delete(t))}function re(t){let n=e.guests.get(t);if(!n)return;let r=n.sharers.length+1;n.sharers.push(r);let i=document.getElementById(`sharerContainer-${t}`);if(!i)return;let a=document.createElement(`div`);a.className=`sharer-form`,a.id=`sharer-${t}-${r}`,a.style.cssText=`background: #f8f9fa; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 0.375rem;`,a.innerHTML=`
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem;">
+      <span style="font-size: 0.8125rem; font-weight: 600; color: var(--primary);">Sharer #${r}</span>
       <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeSharerForm(${t}, ${r})">×</button>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Old PID</label>
-        <div class="pid-input-wrapper">
-          <input type="text" id="sharerOldPID-${t}-${r}" class="pid-input" placeholder="Old PID"
-                 oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
-          <span class="pid-status-icon" id="sharerOldPidIcon-${t}-${r}"></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>New PID</label>
-        <div class="pid-input-wrapper">
-          <input type="text" id="sharerNewPID-${t}-${r}" class="pid-input" placeholder="New PID"
-                 oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
-          <span class="pid-status-icon" id="sharerNewPidIcon-${t}-${r}"></span>
-        </div>
-        <div id="sharerPidInfo-${t}-${r}" class="pid-info-box"></div>
-      </div>
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" id="sharerName-${t}-${r}" placeholder="Auto-filled from PID">
-      </div>
+    <div class="form-row" style="gap: 0.375rem;">
+      <input type="text" id="sharerOldPID-${t}-${r}" class="pid-input short" placeholder="Old PID"
+             oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
+      <input type="text" id="sharerNewPID-${t}-${r}" class="pid-input short" placeholder="New PID"
+             oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
+      <input type="text" id="sharerName-${t}-${r}" placeholder="Name">
     </div>
+    <div id="sharerPidInfo-${t}-${r}" class="pid-info-box"></div>
   `,i.appendChild(a)}function ie(t,n){let r=document.getElementById(`sharer-${t}-${n}`);r&&r.remove();let i=e.guests.get(t);i&&(i.sharers=i.sharers.filter(e=>e!==n))}function E(e,t){let n=document.getElementById(`roomTypeButtons-${e}`),r=document.getElementById(`roomTypeSelect-${e}`);if(!n||!r)return;let i=c(t),a=s()[t];n.innerHTML=i.map(t=>`
     <button type="button" class="quick-btn room-type-btn" onclick="window.app.setRoomType(${e}, '${t}')">
       ${t}

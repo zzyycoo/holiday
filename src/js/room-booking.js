@@ -264,54 +264,34 @@ export function addGuestForm() {
   guestDiv.id = `guest-${id}`;
   guestDiv.innerHTML = `
     <div class="guest-header">
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
         <div class="guest-number">${id}</div>
         <span class="guest-title">Guest ${id}</span>
       </div>
-      <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeGuestForm(${id})">
-        Remove
-      </button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeGuestForm(${id})">×</button>
     </div>
-    <div class="guest-fields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Old PID</label>
-          <div class="pid-input-wrapper">
-            <input type="text" id="guestOldPID-${id}" class="pid-input" placeholder="Old PID"
-                   oninput="window.app.searchPID('guestOldPID-${id}', 'guestNewPID-${id}', 'guestName-${id}', 'pidInfo-${id}')">
-            <span class="pid-status-icon" id="oldPidIcon-${id}"></span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>New PID</label>
-          <div class="pid-input-wrapper">
-            <input type="text" id="guestNewPID-${id}" class="pid-input" placeholder="New PID"
-                   oninput="window.app.searchPID('guestOldPID-${id}', 'guestNewPID-${id}', 'guestName-${id}', 'pidInfo-${id}')">
-            <span class="pid-status-icon" id="newPidIcon-${id}"></span>
-          </div>
-          <div id="pidInfo-${id}" class="pid-info-box"></div>
-        </div>
-        <div class="form-group">
-          <label>Guest Name *</label>
-          <input type="text" id="guestName-${id}" class="required-field" placeholder="Guest Name"
-                 oninput="this.value = this.value.toUpperCase()">
-        </div>
+    <div class="guest-fields" style="margin-top: 0.5rem;">
+      <div class="form-row" style="gap: 0.5rem;">
+        <input type="text" id="guestOldPID-${id}" class="pid-input short" placeholder="Old PID"
+               oninput="window.app.searchPID('guestOldPID-${id}', 'guestNewPID-${id}', 'guestName-${id}', 'pidInfo-${id}')">
+        <input type="text" id="guestNewPID-${id}" class="pid-input short" placeholder="New PID"
+               oninput="window.app.searchPID('guestOldPID-${id}', 'guestNewPID-${id}', 'guestName-${id}', 'pidInfo-${id}')">
+        <input type="text" id="guestName-${id}" placeholder="Guest Name"
+               oninput="this.value = this.value.toUpperCase()">
       </div>
-      <div class="form-group">
-        <label>Room Type *</label>
-        <input type="hidden" id="roomType-${id}">
-        <div class="quick-roomtype-buttons" id="roomTypeButtons-${id}" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-          <!-- Room type buttons will be generated here -->
-        </div>
-        <select id="roomTypeSelect-${id}" class="form-input" onchange="window.app.setRoomTypeFromSelect(${id}, this.value)">
-          <option value="">Select Room Type</option>
-        </select>
+      <div id="pidInfo-${id}" class="pid-info-box"></div>
+      <input type="hidden" id="roomType-${id}">
+      <div class="quick-roomtype-buttons" id="roomTypeButtons-${id}" style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin: 0.5rem 0;">
+        <!-- Room type buttons will be generated here -->
       </div>
+      <select id="roomTypeSelect-${id}" class="form-input" onchange="window.app.setRoomTypeFromSelect(${id}, this.value)">
+        <option value="">Select Room Type</option>
+      </select>
     </div>
-    <div class="sharer-section" id="sharerSection-${id}" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+    <div class="sharer-section" id="sharerSection-${id}" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border);">
       <div id="sharerContainer-${id}"></div>
-      <button type="button" class="btn-sharer" onclick="window.app.addSharerForm(${id})" style="margin-top: 0.5rem;">
-        <span class="sharer-icon">👥</span> Add Sharer
+      <button type="button" class="btn btn-outline btn-sm" onclick="window.app.addSharerForm(${id})" style="margin-top: 0.5rem;">
+        + Sharer
       </button>
     </div>
   `;
@@ -353,35 +333,20 @@ export function addSharerForm(guestId) {
   const sharerDiv = document.createElement('div');
   sharerDiv.className = 'sharer-form';
   sharerDiv.id = `sharer-${guestId}-${sharerId}`;
-  sharerDiv.style.cssText = 'background: #f8f9fa; padding: 0.75rem; border-radius: 0.375rem; margin-bottom: 0.5rem;';
+  sharerDiv.style.cssText = 'background: #f8f9fa; padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 0.375rem;';
   sharerDiv.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-      <span style="font-weight: 600; color: var(--primary);">Sharer #${sharerId}</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem;">
+      <span style="font-size: 0.8125rem; font-weight: 600; color: var(--primary);">Sharer #${sharerId}</span>
       <button type="button" class="btn btn-danger btn-sm" onclick="window.app.removeSharerForm(${guestId}, ${sharerId})">×</button>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Old PID</label>
-        <div class="pid-input-wrapper">
-          <input type="text" id="sharerOldPID-${guestId}-${sharerId}" class="pid-input" placeholder="Old PID"
-                 oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
-          <span class="pid-status-icon" id="sharerOldPidIcon-${guestId}-${sharerId}"></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>New PID</label>
-        <div class="pid-input-wrapper">
-          <input type="text" id="sharerNewPID-${guestId}-${sharerId}" class="pid-input" placeholder="New PID"
-                 oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
-          <span class="pid-status-icon" id="sharerNewPidIcon-${guestId}-${sharerId}"></span>
-        </div>
-        <div id="sharerPidInfo-${guestId}-${sharerId}" class="pid-info-box"></div>
-      </div>
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" id="sharerName-${guestId}-${sharerId}" placeholder="Auto-filled from PID">
-      </div>
+    <div class="form-row" style="gap: 0.375rem;">
+      <input type="text" id="sharerOldPID-${guestId}-${sharerId}" class="pid-input short" placeholder="Old PID"
+             oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
+      <input type="text" id="sharerNewPID-${guestId}-${sharerId}" class="pid-input short" placeholder="New PID"
+             oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
+      <input type="text" id="sharerName-${guestId}-${sharerId}" placeholder="Name">
     </div>
+    <div id="sharerPidInfo-${guestId}-${sharerId}" class="pid-info-box"></div>
   `;
   
   container.appendChild(sharerDiv);
