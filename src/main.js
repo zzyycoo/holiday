@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.2.6';
+const VERSION = '3.2.7';
 
 /**
  * Initialize application

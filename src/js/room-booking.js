@@ -148,13 +148,22 @@ function initDatePicker() {
       numberOfMonths: 1,
       numberOfColumns: 1,
       tooltipText: { one: 'night', other: 'nights' },
-      tooltipNumber: (totalDays) => totalDays - 1,
-      setup: (picker) => {
-        picker.on('selected', (startDate, endDate) => {
-          checkInEl.value = startDate.format('YYYY-MM-DD');
-          checkOutEl.value = endDate.format('YYYY-MM-DD');
-          updateDateRangeText(checkInEl.value, checkOutEl.value);
-        });
+      tooltipNumber: (totalDays) => totalDays - 1
+    });
+    
+    // Handle selection
+    pickerEl.addEventListener('click', () => {
+      if (dateRangePicker && !dateRangePicker.isShown) {
+        dateRangePicker.show();
+      }
+    });
+    
+    // Listen for changes via event delegation
+    document.addEventListener('litepicker:selected', (e) => {
+      if (e.detail && e.detail.startDate && e.detail.endDate) {
+        checkInEl.value = e.detail.startDate.format('YYYY-MM-DD');
+        checkOutEl.value = e.detail.endDate.format('YYYY-MM-DD');
+        updateDateRangeText(checkInEl.value, checkOutEl.value);
       }
     });
     
