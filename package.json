@@ -1,9 +1,9 @@
 {
   "name": "booking-email-generator",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "private": true,
   "type": "module",
-  "description": "Hotel Service Booking Email Generator - Modular Architecture with A171 & PID Import",
+  "description": "Hotel Service Booking Email Generator - Compact UI with Two-Column Layout",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

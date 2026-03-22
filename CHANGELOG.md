@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.1] - 2026-03-22
+
+### Changed
+- 🎨 **Compact UI Design** - More efficient use of screen space
+- 🔤 **Smaller Icons** - Service icons reduced from 2rem to 1.5rem (mobile 1.25rem)
+- 📐 **Two-Column Desktop Layout** - Forms on left, preview on right (≥1024px)
+- 📏 **Reduced Spacing** - Less padding and margins throughout
+- 🔘 **Compact Buttons** - Smaller button sizes
+
 ## [3.1.0] - 2026-03-22
 
 ### Added
