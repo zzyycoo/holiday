@@ -439,59 +439,96 @@ function sendEmail() {
 
 /**
  * Save booking data to Google Sheets
- * Uses Google Apps Script Web App URL
+ * Uses iframe GET method (avoids CORS issues)
  */
 function saveToGoogleSheets() {
-  if (!window.generatedEmail) {
-    showToast('Please generate email first', 'warning');
-    return;
-  }
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOpykMzPHrhi6pcthRdASWMQdjXO0VQJilRd9R67i1_GRqtBOPBcHDD8fJrHNjY1znCg/exec';
   
-  // Extract data from the current booking
-  const data = extractBookingData();
-  if (!data) {
-    showToast('No valid booking data to save', 'error');
-    return;
-  }
+  const now = new Date();
+  const currentTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   
-  // Google Apps Script Web App URL
-  // User needs to deploy their own Google Apps Script and put the URL here
-  const GAS_URL = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbyOpykMzPHrhi6pcthRdASWMQdjXO0VQJilRd9R67i1_GRqtBOPBcHDD8fJrHNjY1znCg/exec';
+  let data = {};
   
-  if (!GAS_URL) {
-    // Show setup dialog
-    const url = prompt('Please enter your Google Apps Script Web App URL:\n\n(Leave empty to skip)', '');
-    if (url) {
-      localStorage.setItem('gasUrl', url);
-      saveToGoogleSheets(); // Retry with new URL
-      return;
-    } else {
-      showToast('Google Sheets URL not configured', 'warning');
+  // A171 One Day Trip mode
+  if (state.isA171Mode) {
+    const guests = [];
+    a171Patrons.forEach((_, id) => {
+      const name = document.getElementById(`a171-patron-name-${id}`)?.value?.trim();
+      const oldPID = document.getElementById(`a171-patron-oldpid-${id}`)?.value?.trim() || '';
+      const newPID = document.getElementById(`a171-patron-newpid-${id}`)?.value?.trim() || '';
+      if (name) guests.push({ oldPID, newPID, name });
+    });
+    
+    if (guests.length === 0) {
+      showToast('⚠️ Please add at least one patron name!', 'warning');
       return;
     }
+    
+    data = {
+      agent: document.getElementById('a171-agent')?.value?.trim() || '',
+      checkIn: document.getElementById('a171-date')?.value || '',
+      authorizer: '',
+      currentTime,
+      guests
+    };
+  } else {
+    // Normal mode — room booking required
+    if (!state.selectedServices.has('room')) {
+      showToast('⚠️ Please select Room Booking to save data!', 'warning');
+      return;
+    }
+    
+    const guests = [];
+    state.guests.forEach((guest, id) => {
+      const guestDiv = document.getElementById(`guest-${id}`);
+      if (!guestDiv) return;
+      
+      const name = document.getElementById(`guestName-${id}`)?.value?.trim();
+      const oldPID = document.getElementById(`guestOldPID-${id}`)?.value?.trim() || '';
+      const newPID = document.getElementById(`guestNewPID-${id}`)?.value?.trim() || 'New';
+      
+      if (name) guests.push({ oldPID, newPID, name });
+      
+      // Add sharers
+      guest.sharers.forEach(sharerId => {
+        const sharerName = document.getElementById(`sharerName-${id}-${sharerId}`)?.value?.trim();
+        const sharerOldPID = document.getElementById(`sharerOldPID-${id}-${sharerId}`)?.value?.trim() || '';
+        const sharerNewPID = document.getElementById(`sharerNewPID-${id}-${sharerId}`)?.value?.trim() || 'New';
+        if (sharerName) guests.push({ oldPID: sharerOldPID, newPID: sharerNewPID, name: sharerName });
+      });
+    });
+    
+    if (guests.length === 0) {
+      showToast('⚠️ Please add at least one guest!', 'warning');
+      return;
+    }
+    
+    data = {
+      agent: document.getElementById('agentName')?.value?.trim() || '',
+      checkIn: document.getElementById('checkIn')?.value || '',
+      authorizer: document.getElementById('authorizer')?.value?.trim() || 'Jian.Xu',
+      currentTime,
+      guests
+    };
   }
   
-  showToast('Saving to Google Sheets...', 'info');
+  showToast('📊 Saving to Google Sheets...', 'info');
   
-  fetch(GAS_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    showToast('✓ Saved to Google Sheets!', 'success');
-  })
-  .catch(error => {
-    console.error('Error saving to Google Sheets:', error);
-    showToast('❌ Failed to save. Check console.', 'error');
-  });
+  // Use iframe method to avoid CORS
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.name = 'saveFrame';
+  document.body.appendChild(iframe);
+  iframe.src = `${GOOGLE_SCRIPT_URL}?data=${encodeURIComponent(JSON.stringify(data))}`;
+  
+  setTimeout(() => {
+    try { document.body.removeChild(iframe); } catch(e) {}
+    showToast(`✅ Saved ${data.guests.length} guest(s) to Google Sheets!`, 'success');
+  }, 2000);
 }
 
 /**
- * Extract booking data for Google Sheets
+ * Extract booking data for Google Sheets (legacy - not used)
  */
 function extractBookingData() {
   const data = {
