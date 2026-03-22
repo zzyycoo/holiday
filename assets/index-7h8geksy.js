@@ -19,7 +19,7 @@
   `).join(``)}function v(){let e=document.getElementById(`date-selector`);e&&(e.innerHTML=`
     <div class="form-group">
       <label>Stay Dates</label>
-      <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer;" onclick="initDateRangePicker(); window.dateRangePicker ? window.dateRangePicker.show() : alert('Please wait, loading...');">
+      <input type="text" id="dateRangePicker" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer;" onclick="window.initDateRangePicker(); window.dateRangePicker ? window.dateRangePicker.show() : alert('Please wait, loading...');">
       <input type="hidden" id="checkIn" value="${p()}">
       <input type="hidden" id="checkOut" value="${m()}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
