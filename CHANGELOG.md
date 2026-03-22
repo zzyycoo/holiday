@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0] - 2026-03-22
+
+### Changed
+- 🦾 **Renamed to A KANG TOOLS** - New branding
+- 🎬 **Random Movie Quotes** - Classic movie quotes as subtitle
+- 🔢 **Version sync** - All version numbers updated to 3.2.0
+
 ## [3.1.1] - 2026-03-22
 
 ### Changed

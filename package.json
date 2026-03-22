@@ -1,9 +1,9 @@
 {
   "name": "booking-email-generator",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "private": true,
   "type": "module",
-  "description": "Hotel Service Booking Email Generator - Compact UI with Two-Column Layout",
+  "description": "A KANG TOOLS - Hotel Booking System with Movie Quotes",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

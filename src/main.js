@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.1.0';
+const VERSION = '3.2.0';
 
 /**
  * Initialize application
@@ -102,8 +102,8 @@ function renderHeader() {
   const header = document.querySelector('.app-header');
   if (header) {
     header.innerHTML = `
-      <h1>🏨 Hotel Service Booking System</h1>
-      <div class="version">v${VERSION} | Modular Vite Architecture</div>
+      <h1>🦾 A KANG TOOLS</h1>
+      <div class="version">v${VERSION} | ${getRandomQuote()}</div>
     `;
   }
 }
@@ -662,7 +662,43 @@ function handlePIDImport(event) {
   reader.readAsArrayBuffer(file);
 }
 
-// A171 One Day Trip Mode
+// Classic movie quotes
+const MOVIE_QUOTES = [
+  "Life is like a box of chocolates. - Forrest Gump",
+  "May the Force be with you. - Star Wars",
+  "There's no place like home. - The Wizard of Oz",
+  "I'll be back. - The Terminator",
+  "You're gonna need a bigger boat. - Jaws",
+  "Here's looking at you, kid. - Casablanca",
+  "Go ahead, make my day. - Sudden Impact",
+  "I love the smell of napalm in the morning. - Apocalypse Now",
+  "Show me the money! - Jerry Maguire",
+  "You can't handle the truth! - A Few Good Men",
+  "To infinity and beyond! - Toy Story",
+  "Houston, we have a problem. - Apollo 13",
+  "Keep your friends close, but your enemies closer. - The Godfather II",
+  "The first rule of Fight Club is: You do not talk about Fight Club. - Fight Club",
+  "Why so serious? - The Dark Knight",
+  "I am your father. - The Empire Strikes Back",
+  "Just keep swimming. - Finding Nemo",
+  "With great power comes great responsibility. - Spider-Man",
+  "Hasta la vista, baby. - Terminator 2",
+  "I see dead people. - The Sixth Sense",
+  "Carpe diem. Seize the day, boys. - Dead Poets Society",
+  "Nobody's perfect. - Some Like It Hot",
+  "E.T. phone home. - E.T.",
+  "Bond. James Bond. - Dr. No",
+  "I'll have what she's having. - When Harry Met Sally",
+  "Yo, Adrian! - Rocky",
+  "They may take our lives, but they'll never take our freedom! - Braveheart",
+  "There's no crying in baseball! - A League of Their Own",
+  "You talking to me? - Taxi Driver",
+  "Roads? Where we're going we don't need roads. - Back to the Future"
+];
+
+function getRandomQuote() {
+  return MOVIE_QUOTES[Math.floor(Math.random() * MOVIE_QUOTES.length)];
+}
 let a171PatronCount = 0;
 let a171Patrons = new Map();
 
