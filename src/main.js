@@ -8,7 +8,7 @@ import './css/forms.css';
 import './css/components.css';
 
 import { initState, toggleService, isServiceSelected, state } from './js/state.js';
-import { getServices, getAgentQuickSelect } from './js/hotels.js';
+import { getAgentQuickSelect } from './js/hotels.js';
 import { formatDate, formatDateShort, getTodayStr, getTomorrowStr, resolvePID } from './js/utils.js';
 import { 
   initRoomBooking, 
@@ -44,6 +44,35 @@ import {
   toggleBusRoute,
   generateBusEmail 
 } from './js/bus-booking.js';
+
+// Inline services data (avoiding JSON import issues)
+const SERVICES = {
+  room: {
+    enabled: true,
+    icon: '🏨',
+    title: 'Room Booking'
+  },
+  car: {
+    enabled: true,
+    icon: '🚗',
+    title: 'Car Service'
+  },
+  golf: {
+    enabled: true,
+    icon: '⛳',
+    title: 'Golf Booking'
+  },
+  bus: {
+    enabled: true,
+    icon: '🚌',
+    title: 'Bus Service'
+  }
+};
+
+// getServices function
+function getServices() {
+  return SERVICES;
+}
 
 // App version
 const VERSION = '3.0.0';
@@ -84,17 +113,41 @@ function renderHeader() {
  */
 function renderServiceSelector() {
   const container = document.getElementById('service-selector');
-  if (!container) return;
+  if (!container) {
+    console.error('Service selector container not found');
+    return;
+  }
 
-  const services = getServices();
-  const serviceList = Object.entries(services).filter(([_, config]) => config.enabled);
+  try {
+    const services = getServices();
+    console.log('Services loaded:', services);
+    
+    if (!services || typeof services !== 'object') {
+      console.error('Invalid services data:', services);
+      container.innerHTML = '<p style="color:red">Error loading services</p>';
+      return;
+    }
+    
+    const serviceList = Object.entries(services).filter(([_, config]) => config && config.enabled);
+    console.log('Filtered services:', serviceList);
 
-  container.innerHTML = serviceList.map(([key, config]) => `
-    <div class="service-card" data-service="${key}" onclick="window.app.selectService('${key}')">
-      <span class="icon">${config.icon}</span>
-      <span class="title">${config.title}</span>
-    </div>
-  `).join('');
+    if (serviceList.length === 0) {
+      container.innerHTML = '<p>No services available</p>';
+      return;
+    }
+
+    container.innerHTML = serviceList.map(([key, config]) => `
+      <div class="service-card" data-service="${key}" onclick="window.app.selectService('${key}')">
+        <span class="icon">${config.icon || '🔹'}</span>
+        <span class="title">${config.title || key}</span>
+      </div>
+    `).join('');
+    
+    console.log('Service selector rendered successfully');
+  } catch (error) {
+    console.error('Error rendering service selector:', error);
+    container.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+  }
 }
 
 /**

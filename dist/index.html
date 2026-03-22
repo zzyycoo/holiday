@@ -17,8 +17,8 @@
   
   <!-- Litepicker for date range selection -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
-  <script type="module" crossorigin src="./assets/index-O2BFUzCD.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Z4D1EAOU.css">
+  <script type="module" crossorigin src="/holiday/assets/index-yJd7pbZb.js"></script>
+  <link rel="stylesheet" crossorigin href="/holiday/assets/index-Z4D1EAOU.css">
 </head>
 <body>
   <div class="app-container">
@@ -32,7 +32,22 @@
     <section class="section">
       <h2 class="section-title">Select Services</h2>
       <div id="service-selector" class="service-grid">
-        <!-- Services will be rendered here -->
+        <div class="service-card" data-service="room" onclick="window.app.selectService('room')">
+          <span class="icon">🏨</span>
+          <span class="title">Room Booking</span>
+        </div>
+        <div class="service-card" data-service="car" onclick="window.app.selectService('car')">
+          <span class="icon">🚗</span>
+          <span class="title">Car Service</span>
+        </div>
+        <div class="service-card" data-service="golf" onclick="window.app.selectService('golf')">
+          <span class="icon">⛳</span>
+          <span class="title">Golf Booking</span>
+        </div>
+        <div class="service-card" data-service="bus" onclick="window.app.selectService('bus')">
+          <span class="icon">🚌</span>
+          <span class="title">Bus Service</span>
+        </div>
       </div>
     </section>
 

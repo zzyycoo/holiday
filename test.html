@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <div id="test"></div>
+    <script>
+        console.log('Inline script works');
+        document.getElementById('test').innerHTML = '<p>JavaScript works!</p>';
+    </script>
+    <script type="module">
+        console.log('Module script works');
+        const SERVICES = {
+            room: { enabled: true, icon: '🏨', title: 'Room Booking' },
+            car: { enabled: true, icon: '🚗', title: 'Car Service' }
+        };
+        const container = document.getElementById('test');
+        const serviceList = Object.entries(SERVICES).filter(([_, config]) => config.enabled);
+        container.innerHTML += serviceList.map(([key, config]) => `
+            <div class="service-card">${config.icon} ${config.title}</div>
+        `).join('');
+    </script>
+</body>
+</html>
