@@ -456,7 +456,7 @@ function saveToGoogleSheets() {
   
   // Google Apps Script Web App URL
   // User needs to deploy their own Google Apps Script and put the URL here
-  const GAS_URL = localStorage.getItem('gasUrl') || '';
+  const GAS_URL = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbyOpykMzPHrhi6pcthRdASWMQdjXO0VQJilRd9R67i1_GRqtBOPBcHDD8fJrHNjY1znCg/exec';
   
   if (!GAS_URL) {
     // Show setup dialog
