@@ -186,3 +186,13 @@
     gap: var(--space-xs);
   }
 }
+
+/* Litepicker z-index fix */
+.litepicker {
+  z-index: 9999 !important;
+}
+
+.litepicker .container__main {
+  z-index: 9999 !important;
+}
+

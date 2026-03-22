@@ -38,22 +38,18 @@ function renderAgentSelector() {
   const agents = getAgentQuickSelect();
   
   container.innerHTML = `
-    <div class="form-row" style="align-items: flex-end; gap: 1rem;">
-      <div class="form-group" style="flex: 0 0 200px;">
-        <input list="agentList" id="agentName" placeholder="Agent" class="form-input" onclick="this.select()">
-        <datalist id="agentList">
-          ${agents.map(a => `<option value="${a.name}">`).join('')}
-        </datalist>
-      </div>
-      <div class="form-group" style="flex: 1;">
-        <div class="quick-select">
-          ${agents.map(a => `
-            <button type="button" class="quick-btn agent-btn" data-agent="${a.code}" onclick="window.app.setAgent('${a.code}', '${a.name}')">
-              ${a.code}
-            </button>
-          `).join('')}
-        </div>
-      </div>
+    <div class="form-group" style="max-width: 200px;">
+      <input list="agentList" id="agentName" placeholder="Agent" class="form-input" onclick="this.select()">
+      <datalist id="agentList">
+        ${agents.map(a => `<option value="${a.name}">`).join('')}
+      </datalist>
+    </div>
+    <div class="quick-select" style="margin-top: 0.5rem;">
+      ${agents.map(a => `
+        <button type="button" class="quick-btn agent-btn" data-agent="${a.code}" onclick="window.app.setAgent('${a.code}', '${a.name}')">
+          ${a.code}
+        </button>
+      `).join('')}
     </div>
   `;
 }
@@ -122,13 +118,17 @@ function initDatePicker() {
   const checkInEl = document.getElementById('checkIn');
   const checkOutEl = document.getElementById('checkOut');
 
-  if (!pickerEl || !checkInEl || !checkOutEl) return;
+  if (!pickerEl || !checkInEl || !checkOutEl) {
+    console.error('Date picker elements not found');
+    return;
+  }
 
   // Set initial display
   updateDateRangeText(checkInEl.value, checkOutEl.value);
 
   // Wait for Litepicker to be available
   if (typeof window.Litepicker === 'undefined') {
+    console.log('Waiting for Litepicker...');
     setTimeout(() => initDatePicker(), 500);
     return;
   }
@@ -145,8 +145,8 @@ function initDatePicker() {
       endDate: checkOutEl.value,
       format: 'DD MMM',
       delimiter: ' → ',
-      numberOfMonths: 2,
-      numberOfColumns: 2,
+      numberOfMonths: 1,
+      numberOfColumns: 1,
       tooltipText: { one: 'night', other: 'nights' },
       tooltipNumber: (totalDays) => totalDays - 1,
       setup: (picker) => {
@@ -157,9 +157,10 @@ function initDatePicker() {
         });
       }
     });
+    
+    console.log('Date picker initialized');
   } catch (err) {
     console.error('Litepicker error:', err);
-    // Fallback to native date inputs
     pickerEl.placeholder = 'Select dates';
   }
 }
