@@ -268,7 +268,7 @@ Drop off point: ${dropoff}`);
   
   return `Subject: ${subject}
 
-Dear @Concierge Services
+Dear team
 Please kindly arrange a VIP car as the followings:
 
 ${carDetails.join('\n\n')}

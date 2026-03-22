@@ -632,7 +632,7 @@ export function generateRoomEmail() {
   
   return `Subject: ${subject}
 
-Dear @Concierge Services @Front Desk
+Dear team
 Please kindly arrange room booking as follows:
 
 Guest name: ${guestLines.join('\n')}

@@ -157,7 +157,7 @@ Seats: ${r.seats}`).join('\n');
   
   return `Subject: ${subject}
 
-Hi @Grand Service
+Dear team
 Please help to arrange bus seats as below:
 
 Name: ${passenger}

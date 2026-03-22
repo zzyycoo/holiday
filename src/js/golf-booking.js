@@ -243,7 +243,7 @@ export function generateGolfEmail() {
   
   return `Subject: ${subject}
 
-Dear @The Bluffs Ho Tram - Bookings
+Dear team
 Guest's name:
 ${guestNames.join('\n')}
 
