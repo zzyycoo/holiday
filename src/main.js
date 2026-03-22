@@ -818,10 +818,10 @@ function generateA171Email() {
   
   if (subjectType === 'onedaytrip') {
     subject = `[${agent}] ${firstPatron.pid} ${firstPatron.name} One Day Trip ${dateStr}`;
-    body = `Dear team\n\nPlease note that the guest one day trip:\n` + patrons.map(p => `${p.name} - ${p.pid}`).join('\n');
+    body = patrons.map(p => `Please note that the guest one day trip: ${p.name} - ${p.pid}`).join('\n');
   } else {
     subject = `[${agent}] ${firstPatron.pid} ${firstPatron.name} Patron Registration ${dateStr}`;
-    body = `Dear team\n\nPlease kindly help to arrange patron registration as follows:\n` + 
+    body = `Please kindly help to arrange patron registration as follows:\n` + 
            patrons.map(p => `- ${p.name} - ${p.pid}`).join('\n');
   }
   
