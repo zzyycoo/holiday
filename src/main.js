@@ -75,7 +75,7 @@ function getServices() {
 }
 
 // App version
-const VERSION = '3.2.21';
+const VERSION = '3.2.22';
 
 /**
  * Initialize application
@@ -744,86 +744,32 @@ function initA171Mode() {
   a171PatronCount = 0;
   a171Patrons.clear();
   
-  // Initialize date picker
-  setTimeout(() => initA171DatePicker(), 100);
+  // Initialize date picker with today's date
+  setTimeout(() => initA171Date(), 100);
   
   // Add first patron
   addA171Patron();
 }
 
 /**
- * Initialize A171 single date picker
- * @param {boolean} autoShow - 是否初始化后自动显示
+ * Initialize A171 date - native date input
  */
-function initA171DatePicker(autoShow = false) {
-  // If already initialized
-  if (window.a171DatePicker && typeof window.a171DatePicker.show === 'function') {
-    if (autoShow) window.a171DatePicker.show();
+function initA171Date() {
+  const dateEl = document.getElementById('a171-date');
+  if (!dateEl) {
+    console.error('A171 date element not found');
     return;
   }
   
-  const pickerEl = document.getElementById('a171-date');
-  if (!pickerEl) {
-    console.error('A171 date picker element not found');
-    return;
-  }
+  // Set today's date as default (YYYY-MM-DD format for native date input)
+  const today = getTodayStr();
+  dateEl.value = today;
   
-  // Check if Litepicker is loaded
-  if (typeof Litepicker === 'undefined') {
-    console.log('Litepicker not loaded, retrying...');
-    setTimeout(() => initA171DatePicker(autoShow), 300);
-    return;
-  }
-  
-  // Set today's date as default display (only if empty)
-  if (!pickerEl.dataset.isoDate) {
-    const today = getTodayStr();
-    updateA171DateDisplay(today);
-  }
-  
-  // Destroy existing picker if any
-  if (window.a171DatePicker) {
-    window.a171DatePicker.destroy();
-  }
-  
-  window.a171DatePicker = new Litepicker({
-    element: pickerEl,
-    singleMode: true,
-    startDate: pickerEl.dataset.isoDate || getTodayStr(),
-    format: 'DD MMM YYYY',
-    setup: (picker) => {
-      picker.on('selected', (date) => {
-        const dateStr = date.format('YYYY-MM-DD');
-        updateA171DateDisplay(dateStr);
-      });
-    }
-  });
-  
-  console.log('A171 date picker initialized');
-  
-  // Auto show if requested
-  if (autoShow) {
-    window.a171DatePicker.show();
-  }
+  console.log('A171 date initialized:', today);
 }
 
-// Expose to window for onclick handler
-window.initA171DatePicker = initA171DatePicker;
-
-/**
- * Update A171 date display
- */
-function updateA171DateDisplay(dateStr) {
-  const pickerEl = document.getElementById('a171-date');
-  if (!pickerEl || !dateStr) return;
-  
-  const date = new Date(dateStr + 'T00:00:00');
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  pickerEl.value = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-  
-  // Store the ISO date for form submission
-  pickerEl.dataset.isoDate = dateStr;
-}
+// Expose to window
+window.initA171Date = initA171Date;
 
 function addA171Patron() {
   const id = ++a171PatronCount;
@@ -936,7 +882,7 @@ window.app = {
   // A171 One Day Trip
   addA171Patron,
   removeA171Patron,
-  initA171DatePicker,
+  initA171Date,
   
   // Global actions
   generateAllEmails,
