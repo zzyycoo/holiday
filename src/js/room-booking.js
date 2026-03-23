@@ -79,7 +79,7 @@ function renderDateSelector() {
   container.innerHTML = `
     <div class="form-group">
       <label>Stay Dates</label>
-      <div id="stayRangeDisplayBox" class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; min-height: 44px; display: flex; align-items: center; color: var(--text-secondary);" onclick="window.initDateRangePicker(); if(window.dateRangePicker){window.dateRangePicker.show();}else{alert('Loading calendar...');}">Select dates...</div>
+      <input type="search" id="x1y2z3" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onclick="window.initDateRangePicker()">
       <input type="hidden" id="checkIn" value="${getTodayStr()}">
       <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
@@ -127,7 +127,7 @@ function initDateRangePicker() {
     return;
   }
   
-  const pickerEl = document.getElementById('stayRangeDisplayBox');
+  const pickerEl = document.getElementById('x1y2z3');
   const checkInEl = document.getElementById('checkIn');
   const checkOutEl = document.getElementById('checkOut');
 
@@ -182,11 +182,14 @@ function initDateRangePicker() {
 // Expose to window for onclick handler
 window.initDateRangePicker = initDateRangePicker;
 
+// Expose to window for onclick handler
+window.initDateRangePicker = initDateRangePicker;
+
 /**
  * Update date range display text
  */
 function updateDateRangeText(checkIn, checkOut) {
-  const pickerEl = document.getElementById('stayRangeDisplayBox');
+  const pickerEl = document.getElementById('x1y2z3');
   const displayEl = document.getElementById('dateRangeDisplay');
 
   if (!checkIn || !checkOut) return;
@@ -202,7 +205,7 @@ function updateDateRangeText(checkIn, checkOut) {
   };
 
   if (pickerEl) {
-    pickerEl.textContent = `${formatDateShort(start)} → ${formatDateShort(end)}`;
+    pickerEl.value = `${formatDateShort(start)} → ${formatDateShort(end)}`;
     pickerEl.style.color = 'var(--text)';
   }
   if (displayEl && nights > 0) {
