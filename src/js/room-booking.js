@@ -76,23 +76,24 @@ function renderDateSelector() {
   const container = document.getElementById('date-selector');
   if (!container) return;
 
+  const today = getTodayStr();
+  const tomorrow = getTomorrowStr();
   container.innerHTML = `
     <div class="form-group">
       <label>Stay Dates</label>
-      <input type="search" id="x1y2z3" placeholder="Select dates..." readonly class="form-input" style="cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onclick="window.initDateRangePicker()">
-      <input type="hidden" id="checkIn" value="${getTodayStr()}">
-      <input type="hidden" id="checkOut" value="${getTomorrowStr()}">
-      <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;"></div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="date" id="checkIn" value="${today}" class="form-input" style="flex: 1; min-width: 0;" onchange="window.updateDateRange && window.updateDateRange()">
+        <span style="color: var(--text-secondary); font-weight: 500;">→</span>
+        <input type="date" id="checkOut" value="${tomorrow}" class="form-input" style="flex: 1; min-width: 0;" onchange="window.updateDateRange && window.updateDateRange()">
+      </div>
+      <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;">1 night</div>
     </div>
   `;
 
+  // Initialize display
   setTimeout(() => {
-    initDateRangePicker();
-    // Retry after window load to ensure Litepicker is ready
-    if (typeof Litepicker === 'undefined') {
-      window.addEventListener('load', initDateRangePicker);
-    }
-  }, 50);
+    if (window.updateDateRange) window.updateDateRange();
+  }, 0);
 }
 
 /**
@@ -118,78 +119,9 @@ function renderAuthorizerSelector() {
 }
 
 /**
- * Initialize Litepicker date range picker
- */
-function initDateRangePicker() {
-  // If already initialized, just show it
-  if (window.dateRangePicker && typeof window.dateRangePicker.show === 'function') {
-    window.dateRangePicker.show();
-    return;
-  }
-  
-  const pickerEl = document.getElementById('x1y2z3');
-  const checkInEl = document.getElementById('checkIn');
-  const checkOutEl = document.getElementById('checkOut');
-
-  if (!pickerEl || !checkInEl || !checkOutEl) {
-    console.error('Date picker elements not found');
-    return;
-  }
-
-  // Set initial display
-  updateDateRangeText(checkInEl.value, checkOutEl.value);
-
-  // Check if Litepicker is loaded
-  if (typeof Litepicker === 'undefined') {
-    console.log('Litepicker not loaded, retrying...');
-    setTimeout(initDateRangePicker, 300);
-    return;
-  }
-
-  // Destroy existing picker if any
-  if (window.dateRangePicker) {
-    window.dateRangePicker.destroy();
-  }
-
-  window.dateRangePicker = new Litepicker({
-    element: pickerEl,
-    singleMode: false,
-    startDate: checkInEl.value,
-    endDate: checkOutEl.value,
-    format: 'DD MMM YYYY',
-    delimiter: ' → ',
-    tooltipText: { one: 'night', other: 'nights' },
-    tooltipNumber: (totalDays) => totalDays - 1,
-    setup: (picker) => {
-      picker.on('selected', (startDate, endDate) => {
-        checkInEl.value = startDate.format('YYYY-MM-DD');
-        checkOutEl.value = endDate.format('YYYY-MM-DD');
-        updateDateRangeText(checkInEl.value, checkOutEl.value);
-      });
-    }
-  });
-  
-  // Auto-show after initialization
-  setTimeout(() => {
-    if (window.dateRangePicker && typeof window.dateRangePicker.show === 'function') {
-      window.dateRangePicker.show();
-    }
-  }, 50);
-
-  console.log('Litepicker initialized');
-}
-
-// Expose to window for onclick handler
-window.initDateRangePicker = initDateRangePicker;
-
-// Expose to window for onclick handler
-window.initDateRangePicker = initDateRangePicker;
-
-/**
  * Update date range display text
  */
 function updateDateRangeText(checkIn, checkOut) {
-  const pickerEl = document.getElementById('x1y2z3');
   const displayEl = document.getElementById('dateRangeDisplay');
 
   if (!checkIn || !checkOut) return;
@@ -198,20 +130,22 @@ function updateDateRangeText(checkIn, checkOut) {
   const end = new Date(checkOut + 'T00:00:00');
   const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
 
-  const formatDateShort = (date) => {
-    const d = new Date(date);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${d.getDate()} ${months[d.getMonth()]}`;
-  };
-
-  if (pickerEl) {
-    pickerEl.value = `${formatDateShort(start)} → ${formatDateShort(end)}`;
-    pickerEl.style.color = 'var(--text)';
-  }
   if (displayEl && nights > 0) {
     displayEl.textContent = `${nights} night${nights > 1 ? 's' : ''}`;
   }
 }
+
+/**
+ * Update date range display from input values
+ */
+function updateDateRange() {
+  const checkInEl = document.getElementById('checkIn');
+  const checkOutEl = document.getElementById('checkOut');
+  if (checkInEl && checkOutEl) {
+    updateDateRangeText(checkInEl.value, checkOutEl.value);
+  }
+}
+window.updateDateRange = updateDateRange;
 
 /**
  * Set agent value and update UI
