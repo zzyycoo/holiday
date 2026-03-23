@@ -753,10 +753,12 @@ function initA171Mode() {
 
 /**
  * Initialize A171 single date picker
+ * @param {boolean} autoShow - 是否初始化后自动显示
  */
-function initA171DatePicker() {
-  // If already initialized, don't re-create
+function initA171DatePicker(autoShow = false) {
+  // If already initialized
   if (window.a171DatePicker && typeof window.a171DatePicker.show === 'function') {
+    if (autoShow) window.a171DatePicker.show();
     return;
   }
   
@@ -769,13 +771,15 @@ function initA171DatePicker() {
   // Check if Litepicker is loaded
   if (typeof Litepicker === 'undefined') {
     console.log('Litepicker not loaded, retrying...');
-    setTimeout(initA171DatePicker, 300);
+    setTimeout(() => initA171DatePicker(autoShow), 300);
     return;
   }
   
-  // Set today's date as default display
-  const today = getTodayStr();
-  updateA171DateDisplay(today);
+  // Set today's date as default display (only if empty)
+  if (!pickerEl.dataset.isoDate) {
+    const today = getTodayStr();
+    updateA171DateDisplay(today);
+  }
   
   // Destroy existing picker if any
   if (window.a171DatePicker) {
@@ -785,7 +789,7 @@ function initA171DatePicker() {
   window.a171DatePicker = new Litepicker({
     element: pickerEl,
     singleMode: true,
-    startDate: today,
+    startDate: pickerEl.dataset.isoDate || getTodayStr(),
     format: 'DD MMM YYYY',
     setup: (picker) => {
       picker.on('selected', (date) => {
@@ -796,6 +800,11 @@ function initA171DatePicker() {
   });
   
   console.log('A171 date picker initialized');
+  
+  // Auto show if requested
+  if (autoShow) {
+    window.a171DatePicker.show();
+  }
 }
 
 // Expose to window for onclick handler
