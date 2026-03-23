@@ -70,7 +70,7 @@ function renderHotelSelector() {
 }
 
 /**
- * Render date selector
+ * Render date selector with Litepicker date range
  */
 function renderDateSelector() {
   const container = document.getElementById('date-selector');
@@ -78,22 +78,112 @@ function renderDateSelector() {
 
   const today = getTodayStr();
   const tomorrow = getTomorrowStr();
+  
   container.innerHTML = `
     <div class="form-group">
       <label>Stay Dates</label>
-      <div style="display: flex; gap: 0.5rem; align-items: center;">
-        <input type="date" id="checkIn" value="${today}" class="form-input" style="flex: 1; min-width: 0;" onchange="window.updateDateRange && window.updateDateRange()">
-        <span style="color: var(--text-secondary); font-weight: 500;">→</span>
-        <input type="date" id="checkOut" value="${tomorrow}" class="form-input" style="flex: 1; min-width: 0;" onchange="window.updateDateRange && window.updateDateRange()">
-      </div>
+      <input type="text" id="dateRange" readonly placeholder="Select dates..." 
+             style="cursor: pointer; width: 100%;" class="form-input" 
+             onclick="window.initRoomDatePicker && window.initRoomDatePicker()">
+      <!-- Hidden fields to store actual values -->
+      <input type="hidden" id="checkIn" value="${today}">
+      <input type="hidden" id="checkOut" value="${tomorrow}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;">1 night</div>
     </div>
   `;
 
-  // Initialize display
-  setTimeout(() => {
-    if (window.updateDateRange) window.updateDateRange();
-  }, 0);
+  // Initialize the date picker
+  setTimeout(() => initRoomDatePicker(), 100);
+}
+
+/**
+ * Initialize room booking date range picker
+ */
+function initRoomDatePicker() {
+  // If already initialized, just show it
+  if (window.roomDatePicker && typeof window.roomDatePicker.show === 'function') {
+    window.roomDatePicker.show();
+    return;
+  }
+
+  const pickerEl = document.getElementById('dateRange');
+  if (!pickerEl) {
+    console.error('Room date picker element not found');
+    return;
+  }
+
+  // Check if Litepicker is loaded
+  if (typeof Litepicker === 'undefined') {
+    console.log('Litepicker not loaded, retrying...');
+    setTimeout(initRoomDatePicker, 300);
+    return;
+  }
+
+  // Get current values or defaults
+  const checkInEl = document.getElementById('checkIn');
+  const checkOutEl = document.getElementById('checkOut');
+  const startDate = checkInEl?.value || getTodayStr();
+  const endDate = checkOutEl?.value || getTomorrowStr();
+
+  // Destroy existing picker if any
+  if (window.roomDatePicker) {
+    window.roomDatePicker.destroy();
+  }
+
+  window.roomDatePicker = new Litepicker({
+    element: pickerEl,
+    singleMode: false,
+    startDate: startDate,
+    endDate: endDate,
+    format: 'DD MMM YYYY',
+    numberOfMonths: 2,
+    numberOfColumns: 2,
+    autoApply: true,
+    showTooltip: true,
+    tooltipText: {
+      one: 'night',
+      other: 'nights'
+    },
+    setup: (picker) => {
+      picker.on('selected', (startDate, endDate) => {
+        const startStr = startDate.format('YYYY-MM-DD');
+        const endStr = endDate.format('YYYY-MM-DD');
+        
+        // Update hidden inputs
+        const checkInEl = document.getElementById('checkIn');
+        const checkOutEl = document.getElementById('checkOut');
+        if (checkInEl) checkInEl.value = startStr;
+        if (checkOutEl) checkOutEl.value = endStr;
+        
+        // Update display
+        updateDateRangeText(startStr, endStr);
+      });
+    }
+  });
+
+  // Set initial display
+  updateRoomDateDisplay(startDate, endDate);
+  
+  console.log('Room date picker initialized');
+}
+
+// Expose to window
+window.initRoomDatePicker = initRoomDatePicker;
+
+/**
+ * Update room date display
+ */
+function updateRoomDateDisplay(startDate, endDate) {
+  const pickerEl = document.getElementById('dateRange');
+  if (!pickerEl) return;
+  
+  const formatDisplay = (dateStr) => {
+    const date = new Date(dateStr + 'T00:00:00');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${date.getDate()} ${months[date.getMonth()]}`;
+  };
+  
+  pickerEl.value = `${formatDisplay(startDate)} → ${formatDisplay(endDate)}`;
 }
 
 /**
