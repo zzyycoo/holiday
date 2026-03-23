@@ -127,7 +127,7 @@ function initRoomDatePicker() {
     mode: 'range',
     dateFormat: 'd M Y',
     defaultDate: [startDate, endDate],
-    minDate: 'today',
+    minDate: new Date(Date.now() - 86400000), // 允许选择昨天
     showMonths: 2,
     onChange: function(selectedDates, dateStr, instance) {
       if (selectedDates.length === 2) {
@@ -328,7 +328,7 @@ export function addSharerForm(guestId) {
              oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
       <input type="text" id="sharerNewPID-${guestId}-${sharerId}" class="pid-input short" placeholder="New PID"
              oninput="window.app.searchPID('sharerOldPID-${guestId}-${sharerId}', 'sharerNewPID-${guestId}-${sharerId}', 'sharerName-${guestId}-${sharerId}', 'sharerPidInfo-${guestId}-${sharerId}')">
-      <input type="text" id="sharerName-${guestId}-${sharerId}" placeholder="Name">
+      <input type="text" id="sharerName-${guestId}-${sharerId}" placeholder="Name" oninput="this.value = this.value.toUpperCase()">
     </div>
     <div id="sharerPidInfo-${guestId}-${sharerId}" class="pid-info-box"></div>
   `;

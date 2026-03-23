@@ -26,7 +26,7 @@
       <input type="hidden" id="checkOut" value="${m()}">
       <div id="dateRangeDisplay" style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem;">1 night</div>
     </div>
-  `,setTimeout(()=>y(),100))}function y(){let e=document.getElementById(`dateRange`);if(!e){console.error(`Room date picker element not found`);return}if(typeof flatpickr>`u`){console.log(`Flatpickr not loaded, retrying...`),setTimeout(y,300);return}let t=document.getElementById(`checkIn`),n=document.getElementById(`checkOut`),r=t?.value||p(),i=n?.value||m();window.roomDatePicker&&window.roomDatePicker.destroy(),window.roomDatePicker=flatpickr(e,{mode:`range`,dateFormat:`d M Y`,defaultDate:[r,i],minDate:`today`,showMonths:2,onChange:function(e,t,n){if(e.length===2){let t=flatpickr.formatDate(e[0],`Y-m-d`),n=flatpickr.formatDate(e[1],`Y-m-d`),r=document.getElementById(`checkIn`),i=document.getElementById(`checkOut`);r&&(r.value=t),i&&(i.value=n),x(t,n)}}}),x(r,i),console.log(`Room date picker initialized with Flatpickr`)}function b(){let e=document.getElementById(`authorizer-selector`);e&&(e.innerHTML=`
+  `,setTimeout(()=>y(),100))}function y(){let e=document.getElementById(`dateRange`);if(!e){console.error(`Room date picker element not found`);return}if(typeof flatpickr>`u`){console.log(`Flatpickr not loaded, retrying...`),setTimeout(y,300);return}let t=document.getElementById(`checkIn`),n=document.getElementById(`checkOut`),r=t?.value||p(),i=n?.value||m();window.roomDatePicker&&window.roomDatePicker.destroy(),window.roomDatePicker=flatpickr(e,{mode:`range`,dateFormat:`d M Y`,defaultDate:[r,i],minDate:new Date(Date.now()-864e5),showMonths:2,onChange:function(e,t,n){if(e.length===2){let t=flatpickr.formatDate(e[0],`Y-m-d`),n=flatpickr.formatDate(e[1],`Y-m-d`),r=document.getElementById(`checkIn`),i=document.getElementById(`checkOut`);r&&(r.value=t),i&&(i.value=n),x(t,n)}}}),x(r,i),console.log(`Room date picker initialized with Flatpickr`)}function b(){let e=document.getElementById(`authorizer-selector`);e&&(e.innerHTML=`
     <div class="form-group">
       <label>Authorizer</label>
       <input list="authorizerList" id="authorizer" value="Jian.Xu" placeholder="Select or type name" class="form-input" onclick="this.select()">
@@ -80,7 +80,7 @@
              oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
       <input type="text" id="sharerNewPID-${t}-${r}" class="pid-input short" placeholder="New PID"
              oninput="window.app.searchPID('sharerOldPID-${t}-${r}', 'sharerNewPID-${t}-${r}', 'sharerName-${t}-${r}', 'sharerPidInfo-${t}-${r}')">
-      <input type="text" id="sharerName-${t}-${r}" placeholder="Name">
+      <input type="text" id="sharerName-${t}-${r}" placeholder="Name" oninput="this.value = this.value.toUpperCase()">
     </div>
     <div id="sharerPidInfo-${t}-${r}" class="pid-info-box"></div>
   `,i.appendChild(a)}function T(t,n){let r=document.getElementById(`sharer-${t}-${n}`);r&&r.remove();let i=e.guests.get(t);i&&(i.sharers=i.sharers.filter(e=>e!==n))}function E(e,t){let n=document.getElementById(`roomTypeButtons-${e}`),r=document.getElementById(`roomTypeSelect-${e}`);if(!n||!r)return;let i=c(t),a=s()[t];n.innerHTML=i.map(t=>`
